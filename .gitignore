@@ -1,0 +1,10 @@
+*.iml
+/frontend/.gradle
+/frontend/local.properties
+/frontend/.idea/workspace.xml
+/frontend/.idea/libraries
+*.DS_Store
+/frontend/build
+/frontend/captures
+/frontend/.externalNativeBuild
+/frontend/app/src/main/res/values/strings_secret.xml
