@@ -12,11 +12,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        AccessToken token = AccessToken.getCurrentAccessToken();
+        /*AccessToken token = AccessToken.getCurrentAccessToken();
         if (token == null) {
-            // LoginFragment
+            LoginFragment loginFragment = new LoginFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.framelayout_main_fragmentcontainer, loginFragment).commit();
         } else {
-            // MainFragment
-        }
+            MainFragment mainFragment = new MainFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.framelayout_main_fragmentcontainer, mainFragment).commit();
+        }*/
+        SelectFragment selectFragment = new SelectFragment();
+        getSupportFragmentManager().beginTransaction()
+                    .add(R.id.framelayout_main_fragmentcontainer, selectFragment).commit();
     }
 }
