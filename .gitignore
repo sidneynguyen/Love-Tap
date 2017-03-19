@@ -8,3 +8,4 @@
 /frontend/captures
 /frontend/.externalNativeBuild
 /frontend/app/src/main/res/values/strings_secret.xml
+/backend/node_modules
