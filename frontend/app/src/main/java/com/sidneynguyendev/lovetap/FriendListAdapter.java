@@ -18,6 +18,8 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
 
     private ArrayList<FbFriend> mFriendList;
 
+    private OnFriendClickListener mOnFriendClickListener;
+
     public FriendListAdapter(ArrayList<FbFriend> friendList) {
         this.mFriendList = friendList;
     }
@@ -39,7 +41,11 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
         return mFriendList.size();
     }
 
-    public class FriendViewHolder extends RecyclerView.ViewHolder {
+    public void setOnFriendClickListener(OnFriendClickListener listener) {
+        mOnFriendClickListener = listener;
+    }
+
+    public class FriendViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         private ProfilePictureView mFriendProfilePic;
         private TextView mFriendNameText;
@@ -48,6 +54,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
             super(itemView);
             mFriendProfilePic = (ProfilePictureView) itemView.findViewById(R.id.profilepicview_select_friend);
             mFriendNameText = (TextView) itemView.findViewById(R.id.textview_select_friendname);
+            itemView.findViewById(R.id.cardview_select_friend).setOnClickListener(this);
         }
 
         public void setProfilePic(String id) {
@@ -57,5 +64,16 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Fr
         public void setNameText(String name) {
             mFriendNameText.setText(name);
         }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnFriendClickListener != null) {
+                mOnFriendClickListener.onFriendClick(v, getPosition());
+            }
+        }
+    }
+
+    public interface OnFriendClickListener {
+        void onFriendClick(View view, int position);
     }
 }

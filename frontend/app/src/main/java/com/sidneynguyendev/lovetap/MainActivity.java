@@ -21,9 +21,9 @@ public class MainActivity extends AppCompatActivity {
             MainFragment mainFragment = new MainFragment();
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.framelayout_main_fragmentcontainer, mainFragment).commit();
-        }*/
+        }
         SelectFragment selectFragment = new SelectFragment();
         getSupportFragmentManager().beginTransaction()
-                    .add(R.id.framelayout_main_fragmentcontainer, selectFragment).commit();
+                    .add(R.id.framelayout_main_fragmentcontainer, selectFragment).commit();*/
     }
 }

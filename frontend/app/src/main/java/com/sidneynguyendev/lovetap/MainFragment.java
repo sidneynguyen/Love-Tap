@@ -16,7 +16,7 @@ public class MainFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnMainFragmentInteractionListener mListener;
 
     public MainFragment() {}
 
@@ -47,11 +47,11 @@ public class MainFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnMainFragmentInteractionListener) {
+            mListener = (OnMainFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnLoginFragmentInteractionListener");
         }
     }
 
@@ -61,7 +61,7 @@ public class MainFragment extends Fragment {
         mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
+    public interface OnMainFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
 }

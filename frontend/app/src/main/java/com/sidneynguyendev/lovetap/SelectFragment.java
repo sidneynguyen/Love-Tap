@@ -21,21 +21,22 @@ import org.json.JSONException;
 import java.util.ArrayList;
 
 
-public class SelectFragment extends Fragment {
+public class SelectFragment extends Fragment implements FriendListAdapter.OnFriendClickListener {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnSelectFragmentInteractionListener mListener;
 
     private RecyclerView mFriendListView;
     private FriendListAdapter mFriendListAdapter;
 
     private ArrayList<FbFriend> mFriendList;
 
-    public SelectFragment() {}
+    public SelectFragment() {
+    }
 
     public static SelectFragment newInstance(String param1, String param2) {
         SelectFragment fragment = new SelectFragment();
@@ -55,6 +56,7 @@ public class SelectFragment extends Fragment {
         }
         mFriendList = new ArrayList<>();
         mFriendListAdapter = new FriendListAdapter(mFriendList);
+        mFriendListAdapter.setOnFriendClickListener(SelectFragment.this);
     }
 
     @Override
@@ -71,36 +73,40 @@ public class SelectFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         AccessToken token = AccessToken.getCurrentAccessToken();
-        GraphRequest.newMyFriendsRequest(token, new GraphRequest.GraphJSONArrayCallback() {
-            @Override
-            public void onCompleted(JSONArray objects, GraphResponse response) {
-                if (objects != null) {
-                    try {
-                        for (int i = 0; i < objects.length(); i++) {
-                            FbFriend friend = new FbFriend(
-                                    objects.getJSONObject(i).getString("id"),
-                                    objects.getJSONObject(i).getString("name")
-                            );
-                            mFriendList.add(friend);
-                            mFriendListAdapter.notifyItemInserted(mFriendList.size() - 1);
-                        }
-                    } catch (JSONException e) {
+        if (token == null) {
+            // not logged in
+        } else {
+            GraphRequest.newMyFriendsRequest(token, new GraphRequest.GraphJSONArrayCallback() {
+                @Override
+                public void onCompleted(JSONArray objects, GraphResponse response) {
+                    if (objects != null) {
+                        try {
+                            for (int i = 0; i < objects.length(); i++) {
+                                FbFriend friend = new FbFriend(
+                                        objects.getJSONObject(i).getString("id"),
+                                        objects.getJSONObject(i).getString("name")
+                                );
+                                mFriendList.add(friend);
+                                mFriendListAdapter.notifyItemInserted(mFriendList.size() - 1);
+                            }
+                        } catch (JSONException e) {
 
+                        }
                     }
                 }
-            }
-        }).executeAsync();
+            }).executeAsync();
+        }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        /*if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnSelectFragmentInteractionListener) {
+            mListener = (OnSelectFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
-        }*/
+                    + " must implement OnLoginFragmentInteractionListener");
+        }
     }
 
     @Override
@@ -109,7 +115,12 @@ public class SelectFragment extends Fragment {
         mListener = null;
     }
 
-    public interface OnFragmentInteractionListener {
+    @Override
+    public void onFriendClick(View view, int position) {
+
+    }
+
+    public interface OnSelectFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
 }

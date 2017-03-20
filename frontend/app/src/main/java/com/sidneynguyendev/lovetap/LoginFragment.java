@@ -13,7 +13,6 @@ import android.view.ViewGroup;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
-import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
@@ -25,7 +24,7 @@ public class LoginFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private OnFragmentInteractionListener mListener;
+    private OnLoginFragmentInteractionListener mListener;
 
     private CallbackManager mCallbackManager;
     private LoginButton mLoginButton;
@@ -85,11 +84,11 @@ public class LoginFragment extends Fragment {
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);/*
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnLoginFragmentInteractionListener) {
+            mListener = (OnLoginFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnLoginFragmentInteractionListener");
         }*/
     }
 
@@ -105,7 +104,7 @@ public class LoginFragment extends Fragment {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public interface OnFragmentInteractionListener {
+    public interface OnLoginFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
 
