@@ -2,11 +2,14 @@ package com.sidneynguyendev.lovetap;
 
 import android.content.Context;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.JsonReader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +21,12 @@ import com.facebook.GraphResponse;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 
 
@@ -117,10 +126,53 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
 
     @Override
     public void onFriendClick(View view, int position) {
+        Log.d("HERE", "CLICK");
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("http://10.0.2.2:3000/api/crush");
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestProperty("User-Agent", "love-tap-v1.0");
+                    if (connection.getResponseCode() == 200) {
+                        // Success
+                        // Further processing here
+                        InputStream responseBody = connection.getInputStream();
+                        InputStreamReader responseBodyReader =
+                                new InputStreamReader(responseBody, "UTF-8");
+                        JsonReader jsonReader = new JsonReader(responseBodyReader);
+                        jsonReader.beginObject(); // Start processing the JSON object
+                        while (jsonReader.hasNext()) { // Loop through all keys
+                            String key = jsonReader.nextName(); // Fetch the next key
+                            /*if (key.equals("organization_url")) { // Check if desired key
+                                // Fetch the value as a String
+                                String value = jsonReader.nextString();
 
+                                // Do something with the value
+                                // ...
+
+                                break; // Break out of the loop
+                            } else {
+                                jsonReader.skipValue(); // Skip values of other keys
+                            }*/
+                            Log.d("HERE", key + ": " + jsonReader.nextString());
+                        }
+                        jsonReader.close();
+                        connection.disconnect();
+                    } else {
+                        // Error handling code goes here
+                    }
+                } catch (MalformedURLException e) {
+
+                } catch (IOException e) {
+
+                }
+            }
+        });
     }
 
     public interface OnSelectFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
     }
+
 }

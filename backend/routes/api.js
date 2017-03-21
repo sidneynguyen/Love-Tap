@@ -3,8 +3,8 @@ var router = express.Router();
 
 router.get('/crush', function(req, res) {
   res.json({
-    love: true,
-    success: true
+    love: 'You',
+    status: 'Success'
   });
 });
 
