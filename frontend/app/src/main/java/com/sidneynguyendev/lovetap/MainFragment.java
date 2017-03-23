@@ -45,6 +45,7 @@ public class MainFragment extends Fragment {
 
     private ProfilePictureView mCrushProfilePicView;
     private TextView mCrushTextView;
+    private TextView mCrushDecisionTextView;
 
     public MainFragment() {}
 
@@ -74,6 +75,7 @@ public class MainFragment extends Fragment {
         mLogoutButton = (Button) view.findViewById(R.id.button_main_logout);
         mCrushProfilePicView = (ProfilePictureView) view.findViewById(R.id.profilepicview_main_crush);
         mCrushTextView = (TextView) view.findViewById(R.id.textview_main_crushname);
+        mCrushDecisionTextView = (TextView) view.findViewById(R.id.textview_main_crushdecision);
         return view;
     }
 
@@ -131,32 +133,27 @@ public class MainFragment extends Fragment {
                         jsonReader.beginObject();
                         String crushId = null;
                         String crushName = null;
+                        boolean crushMe = false;
                         while (jsonReader.hasNext()) {
                             String key = jsonReader.nextName();
-                            /*if (key.equals("organization_url")) { // Check if desired key
-                                // Fetch the value as a String
-                                String value = jsonReader.nextString();
-
-                                // Do something with the value
-                                // ...
-
-                                break; // Break out of the loop
-                            } else {
-                                jsonReader.skipValue(); // Skip values of other keys
-                            }*/
-                            if (key.equals("crushId")) {
-                                crushId = jsonReader.nextString();
-                            } else if (key.equals("crushName")) {
-                                crushName = jsonReader.nextString();
-                            } else {
-                                Log.d("HERE", key + ": " + jsonReader.nextString());
-                            }
-                            if (crushId != null && crushName != null) {
-                                updateCrush(crushId, crushName);
+                            switch (key) {
+                                case "crushId":
+                                    crushId = jsonReader.nextString();
+                                    break;
+                                case "crushName":
+                                    crushName = jsonReader.nextString();
+                                    break;
+                                case "me":
+                                    crushMe = jsonReader.nextBoolean();
+                                    break;
+                                default:
+                                    jsonReader.skipValue();
+                                    break;
                             }
                         }
                         jsonReader.close();
                         connection.disconnect();
+                        updateCrush(crushId, crushName, crushMe);
                     } else {
                         Log.e("ERROR", "" + connection.getResponseCode());
                     }
@@ -169,12 +166,21 @@ public class MainFragment extends Fragment {
         });
     }
 
-    private void updateCrush(final String id, final String name) {
+    private void updateCrush(final String id, final String name, final boolean me) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 mCrushProfilePicView.setProfileId(id);
                 mCrushTextView.setText(name);
+                if (id != null && name != null) {
+                    if (me) {
+                        mCrushDecisionTextView.setText(name + " HAS A CRUSH ON YOU TOO!!!");
+                    } else {
+                        mCrushDecisionTextView.setText(name + " has not chosen you yet ;)");
+                    }
+                } else {
+                    mCrushDecisionTextView.setText("");
+                }
             }
         });
     }

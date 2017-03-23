@@ -33,18 +33,16 @@ passport.use(new FacebookTokenStrategy({
           }
           return done(err, user);
         });
-        
-      }
-      db.insertUser({facebookId: profile.id, accessToken: accessToken, crush: null}, function(err, user) {
-        if (err) {
-          return done(err);
-        }
-        console.log(user);
-        return done(err, user);
-      });
+      } else {
+        db.insertUser({facebookId: profile.id, accessToken: accessToken, crush: null}, function(err, user) {
+          if (err) {
+            return done(err);
+          }
+          return done(err, user);
+        });
+      };
     });
-  }
-));
+  }));
 
 passport.serializeUser(function(user, done) {
   done(null, user._id);
