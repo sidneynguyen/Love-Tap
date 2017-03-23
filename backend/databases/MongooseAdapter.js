@@ -17,6 +17,25 @@ module.exports = {
 
   selectUserByFacebookId: function(id, callback) {
     User.findOne({facebookId: id}, callback);
+  },
+
+  updateUserAccessToken: function(user, token, callback) {
+    user.accessToken = token;
+    user.save(callback);
+  },
+
+  updateUserCrushByFacebookIdAndAccessToken: function(id, token, crushId, crushName, callback) {
+    User.findOne({facebookId: id, accessToken: token}, function(err, user) {
+      if (err) {
+        return callback(err);
+      }
+      if (!user) {
+        return callback(null, null);
+      }
+      user.crushId = crushId;
+      user.crushName = crushName;
+      user.save(callback);
+    });
   }
 
 };

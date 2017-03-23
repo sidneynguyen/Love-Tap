@@ -26,13 +26,20 @@ passport.use(new FacebookTokenStrategy({
       if (err) {
         return done(err);
       }
-      if (user) { 
-        return done(err, user);
+      if (user) {
+        db.updateUserAccessToken(user, accessToken, function(err, user) {
+          if (err) {
+            return done(err);
+          }
+          return done(err, user);
+        });
+        
       }
-      db.insertUser({facebookId: profile.id}, function(err, user) {
+      db.insertUser({facebookId: profile.id, accessToken: accessToken, crush: null}, function(err, user) {
         if (err) {
           return done(err);
         }
+        console.log(user);
         return done(err, user);
       });
     });

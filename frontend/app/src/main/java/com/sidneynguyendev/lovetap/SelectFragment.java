@@ -126,11 +126,11 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
 
     @Override
     public void onFriendClick(View view, int position) {
-        mListener.onSelectFragmentCrush(mFriendList.get(position).getId());
+        mListener.onSelectFragmentCrush(mFriendList.get(position).getId(), mFriendList.get(position).getName());
     }
 
     public interface OnSelectFragmentInteractionListener {
-        void onSelectFragmentCrush(String uid);
+        void onSelectFragmentCrush(String crushId, String crushName);
     }
 
 }
