@@ -15,4 +15,8 @@ module.exports = {
     newUser.save(user, callback);
   },
 
+  selectUserByFacebookId: function(id, callback) {
+    User.findOne({facebookId: id}, callback);
+  }
+
 };

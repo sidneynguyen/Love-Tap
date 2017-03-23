@@ -14,15 +14,7 @@ router.get('/', function(req, res) {
 router.post('/facebook/token',
   passport.authenticate('facebook-token'),
   function (req, res) {
-    // do something with req.user
-    var user = {
-      _id: req.user._id,
-      facebookId: req.user.facebookId,
-      dateCreated: req.user.dateCreated,
-      isAuthenticated: "" + req.isAuthenticated()
-    }
-    console.log(user);
-    res.json(user);
+    res.json(req.user);
   }
 );
 
@@ -30,8 +22,19 @@ passport.use(new FacebookTokenStrategy({
     clientID: secrets.clientID,
     clientSecret: secrets.clientSecret
   }, function(accessToken, refreshToken, profile, done) {
-    db.insertUser({facebookId: profile.id}, function(err, user) {
-      return done(err, user);
+    db.selectUserByFacebookId(profile.id, function(err, user) {
+      if (err) {
+        return done(err);
+      }
+      if (user) { 
+        return done(err, user);
+      }
+      db.insertUser({facebookId: profile.id}, function(err, user) {
+        if (err) {
+          return done(err);
+        }
+        return done(err, user);
+      });
     });
   }
 ));
