@@ -10,6 +10,10 @@
   "license": "ISC",
   "dependencies": {
     "body-parser": "^1.17.1",
-    "express": "^4.15.2"
+    "express": "^4.15.2",
+    "express-session": "^1.15.1",
+    "mongoose": "^4.9.1",
+    "passport": "^0.3.2",
+    "passport-facebook-token": "^3.3.0"
   }
 }

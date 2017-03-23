@@ -9,3 +9,4 @@
 /frontend/.externalNativeBuild
 /frontend/app/src/main/res/values/strings_secret.xml
 /backend/node_modules
+/backend/secrets.js

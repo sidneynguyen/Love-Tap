@@ -131,7 +131,7 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
             @Override
             public void run() {
                 try {
-                    URL url = new URL("http://10.0.2.2:3000/api/crush");
+                    URL url = new URL("http://10.0.2.2:3000/auth/");
                     HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                     connection.setRequestProperty("User-Agent", "love-tap-v1.0");
                     if (connection.getResponseCode() == 200) {
@@ -155,7 +155,7 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
                             } else {
                                 jsonReader.skipValue(); // Skip values of other keys
                             }*/
-                            Log.d("HERE", key + ": " + jsonReader.nextString());
+                            Log.d("HERE", key + ": " + jsonReader.nextBoolean());
                         }
                         jsonReader.close();
                         connection.disconnect();

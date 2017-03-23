@@ -3,18 +3,29 @@ package com.sidneynguyendev.lovetap;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.JsonReader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 
 public class LoginFragment extends Fragment {
@@ -66,7 +77,8 @@ public class LoginFragment extends Fragment {
         mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-
+                Log.d("HERE", "LOGIN SUCCESS");
+                login(loginResult.getAccessToken());
             }
 
             @Override
@@ -77,6 +89,53 @@ public class LoginFragment extends Fragment {
             @Override
             public void onError(FacebookException error) {
 
+            }
+        });
+    }
+
+    private void login(final AccessToken token) {
+        AsyncTask.execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL url = new URL("http://10.0.2.2:3000/auth/facebook/token?access_token=" + token.getToken());
+                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                    connection.setRequestMethod("POST");
+                    connection.setRequestProperty("User-Agent", "love-tap-v1.0");
+                    if (connection.getResponseCode() == 200) {
+                        // Success
+                        // Further processing here
+                        InputStream responseBody = connection.getInputStream();
+                        InputStreamReader responseBodyReader =
+                                new InputStreamReader(responseBody, "UTF-8");
+                        JsonReader jsonReader = new JsonReader(responseBodyReader);
+                        jsonReader.beginObject(); // Start processing the JSON object
+                        while (jsonReader.hasNext()) { // Loop through all keys
+                            String key = jsonReader.nextName(); // Fetch the next key
+                            /*if (key.equals("organization_url")) { // Check if desired key
+                                // Fetch the value as a String
+                                String value = jsonReader.nextString();
+
+                                // Do something with the value
+                                // ...
+
+                                break; // Break out of the loop
+                            } else {
+                                jsonReader.skipValue(); // Skip values of other keys
+                            }*/
+                            Log.d("HERE", key + ": " + jsonReader.nextString());
+                        }
+                        jsonReader.close();
+                        connection.disconnect();
+                    } else {
+                        // Error handling code goes here
+                        Log.e("ERROR", "" + connection.getResponseCode());
+                    }
+                } catch (MalformedURLException e) {
+                    Log.e("ERROR", "ERROR", e);
+                } catch (IOException e) {
+                    Log.e("ERROR", "ERROR", e);
+                }
             }
         });
     }
