@@ -77,8 +77,7 @@ public class LoginFragment extends Fragment {
         mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                Log.d("HERE", "LOGIN SUCCESS");
-                login(loginResult.getAccessToken());
+                mListener.onLoginFragmentSuccess(loginResult.getAccessToken());
             }
 
             @Override
@@ -142,13 +141,13 @@ public class LoginFragment extends Fragment {
 
     @Override
     public void onAttach(Context context) {
-        super.onAttach(context);/*
+        super.onAttach(context);
         if (context instanceof OnLoginFragmentInteractionListener) {
             mListener = (OnLoginFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
                     + " must implement OnLoginFragmentInteractionListener");
-        }*/
+        }
     }
 
     @Override
@@ -164,7 +163,7 @@ public class LoginFragment extends Fragment {
     }
 
     public interface OnLoginFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void onLoginFragmentSuccess(AccessToken token);
     }
 
     private void getCrushData() {

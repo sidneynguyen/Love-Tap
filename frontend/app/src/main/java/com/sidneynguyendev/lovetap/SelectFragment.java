@@ -126,53 +126,11 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
 
     @Override
     public void onFriendClick(View view, int position) {
-        Log.d("HERE", "CLICK");
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    URL url = new URL("http://10.0.2.2:3000/auth/");
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestProperty("User-Agent", "love-tap-v1.0");
-                    if (connection.getResponseCode() == 200) {
-                        // Success
-                        // Further processing here
-                        InputStream responseBody = connection.getInputStream();
-                        InputStreamReader responseBodyReader =
-                                new InputStreamReader(responseBody, "UTF-8");
-                        JsonReader jsonReader = new JsonReader(responseBodyReader);
-                        jsonReader.beginObject(); // Start processing the JSON object
-                        while (jsonReader.hasNext()) { // Loop through all keys
-                            String key = jsonReader.nextName(); // Fetch the next key
-                            /*if (key.equals("organization_url")) { // Check if desired key
-                                // Fetch the value as a String
-                                String value = jsonReader.nextString();
-
-                                // Do something with the value
-                                // ...
-
-                                break; // Break out of the loop
-                            } else {
-                                jsonReader.skipValue(); // Skip values of other keys
-                            }*/
-                            Log.d("HERE", key + ": " + jsonReader.nextBoolean());
-                        }
-                        jsonReader.close();
-                        connection.disconnect();
-                    } else {
-                        // Error handling code goes here
-                    }
-                } catch (MalformedURLException e) {
-
-                } catch (IOException e) {
-
-                }
-            }
-        });
+        mListener.onSelectFragmentCrush(mFriendList.get(position).getId());
     }
 
     public interface OnSelectFragmentInteractionListener {
-        void onFragmentInteraction(Uri uri);
+        void onSelectFragmentCrush(String uid);
     }
 
 }
