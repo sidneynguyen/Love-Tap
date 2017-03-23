@@ -19,6 +19,10 @@ module.exports = {
     User.findOne({facebookId: id}, callback);
   },
 
+  selectUserByFacebookIdAndAccessToken: function(id, token, callback) {
+    User.findOne({facebookId: id, accessToken: token}, callback);
+  },
+
   updateUserAccessToken: function(user, token, callback) {
     user.accessToken = token;
     user.save(callback);
