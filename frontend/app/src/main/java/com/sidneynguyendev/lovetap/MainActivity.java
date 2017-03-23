@@ -171,4 +171,10 @@ public class MainActivity extends AppCompatActivity
             }
         });
     }
+
+    @Override
+    public void onSelectFragmentCancel() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment).commit();
+    }
 }

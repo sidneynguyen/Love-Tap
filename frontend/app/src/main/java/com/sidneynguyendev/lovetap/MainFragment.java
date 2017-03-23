@@ -174,7 +174,7 @@ public class MainFragment extends Fragment {
                 mCrushTextView.setText(name);
                 if (id != null && name != null) {
                     if (me) {
-                        mCrushDecisionTextView.setText(name + " HAS A CRUSH ON YOU TOO!!!");
+                        mCrushDecisionTextView.setText(name.toUpperCase() + " HAS A CRUSH ON YOU TOO!!!");
                     } else {
                         mCrushDecisionTextView.setText(name + " has not chosen you yet ;)");
                     }

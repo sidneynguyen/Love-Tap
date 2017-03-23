@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -43,6 +44,8 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
     private FriendListAdapter mFriendListAdapter;
 
     private ArrayList<FbFriend> mFriendList;
+
+    private Button mCancelButton;
 
     public SelectFragment() {
     }
@@ -75,12 +78,20 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
         mFriendListView = (RecyclerView) view.findViewById(R.id.recyclerview_select_friendlist);
         mFriendListView.setLayoutManager(new LinearLayoutManager(getContext()));
         mFriendListView.setAdapter(mFriendListAdapter);
+        mCancelButton = (Button) view.findViewById(R.id.button_select_cancel);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mListener.onSelectFragmentCancel();
+            }
+        });
+
         AccessToken token = AccessToken.getCurrentAccessToken();
         if (token == null) {
             // not logged in
@@ -131,6 +142,7 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
 
     public interface OnSelectFragmentInteractionListener {
         void onSelectFragmentCrush(String crushId, String crushName);
+        void onSelectFragmentCancel();
     }
 
 }
