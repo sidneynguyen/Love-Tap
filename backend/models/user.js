@@ -8,7 +8,8 @@ var userSchema = mongoose.Schema({
   dateCreated: {
     type: Date,
     default: Date.now
-  }
+  },
+  dateCrushUpdated: Date
 });
 
 mongoose.model('User', userSchema);

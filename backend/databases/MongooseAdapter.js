@@ -38,6 +38,7 @@ module.exports = {
       }
       user.crushId = crushId;
       user.crushName = crushName;
+      user.dateCrushUpdated = Date.now();
       user.save(callback);
     });
   }
