@@ -1,7 +1,6 @@
 package com.sidneynguyendev.lovetap;
 
 import android.content.Context;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -13,10 +12,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.facebook.AccessToken;
-import com.facebook.Profile;
 import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
@@ -24,12 +21,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 
 public class MainFragment extends Fragment {
@@ -152,7 +143,7 @@ public class MainFragment extends Fragment {
             Log.d(TAG, "User not logged in");
             mListener.onMainFragmentLogOut();
         } else {
-            String uid = Profile.getCurrentProfile().getId();
+            String uid = token.getUserId();
             JSONObject body = new JSONObject();
             try {
                 body.put("facebookId", uid);

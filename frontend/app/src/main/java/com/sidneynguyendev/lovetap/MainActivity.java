@@ -1,25 +1,16 @@
 package com.sidneynguyendev.lovetap;
 
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.JsonReader;
 import android.util.Log;
 
 import com.facebook.AccessToken;
-import com.facebook.Profile;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 public class MainActivity extends AppCompatActivity
         implements LoginFragment.OnLoginFragmentInteractionListener,
@@ -92,7 +83,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onSelectFragmentCrush(final String crushId, final String crushName) {
         AccessToken token = AccessToken.getCurrentAccessToken();
-        String uid = Profile.getCurrentProfile().getId();
+        String uid = token.getUserId();
         JSONObject body = new JSONObject();
         try {
             body.put("facebookId", uid);
