@@ -61,14 +61,14 @@ router.post('/crush', function(req, res) {
       return res.json({err: 'User not found'});
     }
     var date = new Date(Date.now());
-    if (!user.dateCrushUpdated) {
+    //if (!user.dateCrushUpdated) {
       db.updateUserCrushByFacebookIdAndAccessToken(facebookId, accessToken, crushId, crushName, function(err, user) {
         if (err) {
           return res.send(err);
         }
         res.json(user);
       });
-    } else if (date.getUTCDay() > user.dateCrushUpdated.getUTCDay() && date.getUTCHours() >= user.dateCrushUpdated.getUTCHours()) {
+    /*} else if (date.getUTCDay() > user.dateCrushUpdated.getUTCDay() && date.getUTCHours() >= user.dateCrushUpdated.getUTCHours()) {
       db.updateUserCrushByFacebookIdAndAccessToken(facebookId, accessToken, crushId, crushName, function(err, user) {
         if (err) {
           return res.send(err);
@@ -77,7 +77,7 @@ router.post('/crush', function(req, res) {
       });
     } else {
       res.json({err: 'Must wait 24 hours'});
-    }
+    }*/
   });
   
 });

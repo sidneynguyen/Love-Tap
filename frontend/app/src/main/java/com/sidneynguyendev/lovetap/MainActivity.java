@@ -26,6 +26,8 @@ public class MainActivity extends AppCompatActivity
         MainFragment.OnMainFragmentInteractionListener,
         SelectFragment.OnSelectFragmentInteractionListener {
 
+    private static final String TAG = "MainActivity";
+
     private LoginFragment mLoginFragment;
     private MainFragment mMainFragment;
     private SelectFragment mSelectFragment;
@@ -110,66 +112,39 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSelectFragmentCrush(final String crushId, final String crushName) {
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    AccessToken token = AccessToken.getCurrentAccessToken();
-                    String uid = Profile.getCurrentProfile().getId();
-                    URL url = new URL("http://10.0.2.2:3000/api/crush");
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setDoOutput(true);
-                    connection.setDoInput(true);
-                    connection.setRequestProperty("Content-Type", "application/json");
-                    connection.setRequestProperty("Accept", "application/json; charset=UTF-8");
-                    connection.setRequestMethod("POST");
-                    JSONObject object = new JSONObject();
-                    try {
-                        object.put("facebookId", uid);
-                        object.put("accessToken", token.getToken());
-                        object.put("crushId", crushId);
-                        object.put("crushName", crushName);
-                    } catch (JSONException e) {
-
-                    }
-                    OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-                    wr.write(object.toString());
-                    wr.flush();
-                    if (connection.getResponseCode() == 200) {
-                        InputStream responseBody = connection.getInputStream();
-                        InputStreamReader responseBodyReader =
-                                new InputStreamReader(responseBody, "UTF-8");
-                        JsonReader jsonReader = new JsonReader(responseBodyReader);
-                        jsonReader.beginObject();
-                        while (jsonReader.hasNext()) {
-                            String key = jsonReader.nextName();
-                            /*if (key.equals("organization_url")) { // Check if desired key
-                                // Fetch the value as a String
-                                String value = jsonReader.nextString();
-
-                                // Do something with the value
-                                // ...
-
-                                break; // Break out of the loop
-                            } else {
-                                jsonReader.skipValue(); // Skip values of other keys
-                            }*/
-                            Log.d("HERE", key + ": " + jsonReader.nextString());
-                        }
-                        jsonReader.close();
-                        connection.disconnect();
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment).commit();
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        String uid = Profile.getCurrentProfile().getId();
+        JSONObject body = new JSONObject();
+        try {
+            body.put("facebookId", uid);
+            body.put("accessToken", token.getToken());
+            body.put("crushId", crushId);
+            body.put("crushName", crushName);
+            RestRequester requester = new RestRequester();
+            String url = "http://10.0.2.2:3000/api/crush";
+            requester.post(url, body, new RestRequester.OnJsonListener() {
+                @Override
+                public void onJson(Exception e, JsonReader jsonReader) {
+                    if (e != null) {
+                        Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", e);
                     } else {
-                        Log.e("ERROR", "" + connection.getResponseCode());
+                        try {
+                            while (jsonReader.hasNext()) {
+                                String key = jsonReader.nextName();
+                                Log.d(TAG, key + ": " + jsonReader.nextString());
+                            }
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment)
+                                    .commit();
+                        } catch (IOException eIO) {
+                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", eIO);
+                        }
                     }
-                } catch (MalformedURLException e) {
-                    Log.e("ERROR", "ERROR", e);
-                } catch (IOException e) {
-                    Log.e("ERROR", "ERROR", e);
                 }
-            }
-        });
+            });
+        } catch (JSONException e) {
+            Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", e);
+        }
     }
 
     @Override

@@ -68,7 +68,7 @@ public class MainFragment extends Fragment {
         mCrushCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                AsyncTask.execute(new Runnable() {
+                /*AsyncTask.execute(new Runnable() {
                     @Override
                     public void run() {
                         try {
@@ -128,7 +128,8 @@ public class MainFragment extends Fragment {
 
                         }
                     }
-                });
+                });*/
+                mListener.onMainFragmentSelectCrush();
             }
         });
 
