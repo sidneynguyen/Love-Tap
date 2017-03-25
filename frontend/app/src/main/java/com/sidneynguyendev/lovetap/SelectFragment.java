@@ -32,11 +32,7 @@ import java.util.ArrayList;
 
 
 public class SelectFragment extends Fragment implements FriendListAdapter.OnFriendClickListener {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
+    private static final String TAG = "SelectFragment";
 
     private OnSelectFragmentInteractionListener mListener;
 
@@ -50,22 +46,9 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
     public SelectFragment() {
     }
 
-    public static SelectFragment newInstance(String param1, String param2) {
-        SelectFragment fragment = new SelectFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         mFriendList = new ArrayList<>();
         mFriendListAdapter = new FriendListAdapter(mFriendList);
         mFriendListAdapter.setOnFriendClickListener(SelectFragment.this);
@@ -94,7 +77,8 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
 
         AccessToken token = AccessToken.getCurrentAccessToken();
         if (token == null) {
-            // not logged in
+            Log.d(TAG, "User is not logged in");
+            mListener.onSelectFragmentCancel();
         } else {
             GraphRequest.newMyFriendsRequest(token, new GraphRequest.GraphJSONArrayCallback() {
                 @Override
@@ -110,7 +94,7 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
                                 mFriendListAdapter.notifyItemInserted(mFriendList.size() - 1);
                             }
                         } catch (JSONException e) {
-
+                            Log.e(TAG, "My friends request", e);
                         }
                     }
                 }

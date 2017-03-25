@@ -51,46 +51,25 @@ public class MainActivity extends AppCompatActivity
     }
 
     @Override
-    public void onLoginFragmentSuccess(final AccessToken token) {
-        AsyncTask.execute(new Runnable() {
+    public void onLoginFragmentSuccess(AccessToken token) {
+        RestRequester requester = new RestRequester();
+        String url = "http://10.0.2.2:3000/auth/facebook/token?access_token=" + token.getToken();
+        requester.post(url, null, new RestRequester.OnJsonListener() {
             @Override
-            public void run() {
-                try {
-                    URL url = new URL("http://10.0.2.2:3000/auth/facebook/token?access_token=" + token.getToken());
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setRequestMethod("POST");
-                    if (connection.getResponseCode() == 200) {
-                        InputStream responseBody = connection.getInputStream();
-                        InputStreamReader responseBodyReader =
-                                new InputStreamReader(responseBody, "UTF-8");
-                        JsonReader jsonReader = new JsonReader(responseBodyReader);
-                        jsonReader.beginObject();
+            public void onJson(Exception e, JsonReader jsonReader) {
+                if (e != null) {
+                    Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token?access_token=", e);
+                } else {
+                    try {
                         while (jsonReader.hasNext()) {
                             String key = jsonReader.nextName();
-                            /*if (key.equals("organization_url")) { // Check if desired key
-                                // Fetch the value as a String
-                                String value = jsonReader.nextString();
-
-                                // Do something with the value
-                                // ...
-
-                                break; // Break out of the loop
-                            } else {
-                                jsonReader.skipValue(); // Skip values of other keys
-                            }*/
-                            Log.d("HERE", key + ": " + jsonReader.nextString());
+                            Log.d(TAG, key + ": " + jsonReader.nextString());
                         }
-                        jsonReader.close();
-                        connection.disconnect();
                         getSupportFragmentManager().beginTransaction()
                                 .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment).commit();
-                    } else {
-                        Log.e("ERROR", "" + connection.getResponseCode());
+                    } catch (IOException eIO) {
+                        Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token?access_token=", eIO);
                     }
-                } catch (MalformedURLException e) {
-                    Log.e("ERROR", "ERROR", e);
-                } catch (IOException e) {
-                    Log.e("ERROR", "ERROR", e);
                 }
             }
         });

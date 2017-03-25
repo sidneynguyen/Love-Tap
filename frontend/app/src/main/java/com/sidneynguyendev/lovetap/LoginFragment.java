@@ -29,11 +29,7 @@ import java.net.URL;
 
 
 public class LoginFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
+    private static final String TAG = "LoginFragment";
 
     private OnLoginFragmentInteractionListener mListener;
 
@@ -42,22 +38,9 @@ public class LoginFragment extends Fragment {
 
     public LoginFragment() {}
 
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
         mCallbackManager = CallbackManager.Factory.create();
     }
 
@@ -82,12 +65,12 @@ public class LoginFragment extends Fragment {
 
             @Override
             public void onCancel() {
-
+                Log.d(TAG, "FB login cancelled");
             }
 
             @Override
             public void onError(FacebookException error) {
-
+                Log.e(TAG, "FB login error", error);
             }
         });
     }
@@ -117,9 +100,5 @@ public class LoginFragment extends Fragment {
 
     public interface OnLoginFragmentInteractionListener {
         void onLoginFragmentSuccess(AccessToken token);
-    }
-
-    private void getCrushData() {
-        // GET request
     }
 }

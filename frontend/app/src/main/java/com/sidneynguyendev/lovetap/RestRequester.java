@@ -29,9 +29,11 @@ public class RestRequester {
                     conn.setRequestProperty("Content-Type", "application/json");
                     conn.setRequestProperty("Accept", "application/json; charset=UTF-8");
                     conn.setRequestMethod("POST");
-                    OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
-                    writer.write(body.toString());
-                    writer.flush();
+                    if (body != null) {
+                        OutputStreamWriter writer = new OutputStreamWriter(conn.getOutputStream());
+                        writer.write(body.toString());
+                        writer.flush();
+                    }
                     if (conn.getResponseCode() == 200) {
                         InputStream responseBody = conn.getInputStream();
                         InputStreamReader responseBodyReader =

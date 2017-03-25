@@ -33,6 +33,8 @@ import java.net.URL;
 
 
 public class MainFragment extends Fragment {
+    private static final String TAG = "MainFragment";
+
     private OnMainFragmentInteractionListener mListener;
 
     private CardView mCrushCardView;
@@ -145,68 +147,56 @@ public class MainFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-        AsyncTask.execute(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    AccessToken token = AccessToken.getCurrentAccessToken();
-                    String uid = Profile.getCurrentProfile().getId();
-                    URL url = new URL("http://10.0.2.2:3000/api/me/crush");
-                    HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                    connection.setDoOutput(true);
-                    connection.setDoInput(true);
-                    connection.setRequestProperty("Content-Type", "application/json");
-                    connection.setRequestProperty("Accept", "application/json; charset=UTF-8");
-                    connection.setRequestMethod("POST");
-                    JSONObject object = new JSONObject();
-                    try {
-                        object.put("facebookId", uid);
-                        object.put("accessToken", token.getToken());
-                    } catch (JSONException e) {
-
-                    }
-                    OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-                    wr.write(object.toString());
-                    wr.flush();
-                    if (connection.getResponseCode() == 200) {
-                        InputStream responseBody = connection.getInputStream();
-                        InputStreamReader responseBodyReader =
-                                new InputStreamReader(responseBody, "UTF-8");
-                        JsonReader jsonReader = new JsonReader(responseBodyReader);
-                        jsonReader.beginObject();
-                        String crushId = null;
-                        String crushName = null;
-                        boolean crushMe = false;
-                        while (jsonReader.hasNext()) {
-                            String key = jsonReader.nextName();
-                            switch (key) {
-                                case "crushId":
-                                    crushId = jsonReader.nextString();
-                                    break;
-                                case "crushName":
-                                    crushName = jsonReader.nextString();
-                                    break;
-                                case "me":
-                                    crushMe = jsonReader.nextBoolean();
-                                    break;
-                                default:
-                                    jsonReader.skipValue();
-                                    break;
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        if (token == null) {
+            Log.d(TAG, "User not logged in");
+            mListener.onMainFragmentLogOut();
+        } else {
+            String uid = Profile.getCurrentProfile().getId();
+            JSONObject body = new JSONObject();
+            try {
+                body.put("facebookId", uid);
+                body.put("accessToken", token.getToken());
+                String url = "http://10.0.2.2:3000/api/me/crush";
+                RestRequester requester = new RestRequester();
+                requester.post(url, body, new RestRequester.OnJsonListener() {
+                    @Override
+                    public void onJson(Exception e, JsonReader jsonReader) {
+                        if (e != null) {
+                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/crush", e);
+                        } else {
+                            String crushId = null;
+                            String crushName = null;
+                            boolean crushMe = false;
+                            try {
+                                while (jsonReader.hasNext()) {
+                                    String key = jsonReader.nextName();
+                                    switch (key) {
+                                        case "crushId":
+                                            crushId = jsonReader.nextString();
+                                            break;
+                                        case "crushName":
+                                            crushName = jsonReader.nextString();
+                                            break;
+                                        case "me":
+                                            crushMe = jsonReader.nextBoolean();
+                                            break;
+                                        default:
+                                            jsonReader.skipValue();
+                                            break;
+                                    }
+                                }
+                                updateCrush(crushId, crushName, crushMe);
+                            } catch (IOException eIO) {
+                                Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/crush", eIO);
                             }
                         }
-                        jsonReader.close();
-                        connection.disconnect();
-                        updateCrush(crushId, crushName, crushMe);
-                    } else {
-                        Log.e("ERROR", "" + connection.getResponseCode());
                     }
-                } catch (MalformedURLException e) {
-                    Log.e("ERROR", "ERROR", e);
-                } catch (IOException e) {
-                    Log.e("ERROR", "ERROR", e);
-                }
+                });
+            } catch (JSONException e) {
+                Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/crush", e);
             }
-        });
+        }
     }
 
     private void updateCrush(final String id, final String name, final boolean me) {
