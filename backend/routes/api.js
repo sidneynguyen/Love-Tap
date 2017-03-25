@@ -2,6 +2,24 @@ var express = require('express');
 var router = express.Router();
 var db = require('../databases/MongooseAdapter');
 
+router.post('/me/time', function(req, res) {
+  var facebookId = req.body.facebookId;
+  var accessToken = req.body.accessToken;
+  db.selectUserByFacebookIdAndAccessToken(facebookId, accessToken, function(err, user) {
+    if (err) {
+      return res.send(err);
+    }
+    if (!user) {
+      return res.json({err: 'User not found'});
+    }
+    var date = new Date(Date.now());
+    var canUpdate = date.getUTCDay() > user.dateCrushUpdated.getUTCDay() && date.getUTCHours() >= user.dateCrushUpdated.getUTCHours();
+    res.json({
+      canUpdate: canUpdate
+    });
+  });
+});
+
 router.post('/me/crush', function(req, res) {
   var facebookId = req.body.facebookId;
   var accessToken = req.body.accessToken;

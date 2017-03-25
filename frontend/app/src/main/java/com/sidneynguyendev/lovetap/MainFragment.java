@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.Profile;
@@ -32,12 +33,6 @@ import java.net.URL;
 
 
 public class MainFragment extends Fragment {
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    private String mParam1;
-    private String mParam2;
-
     private OnMainFragmentInteractionListener mListener;
 
     private CardView mCrushCardView;
@@ -49,22 +44,9 @@ public class MainFragment extends Fragment {
 
     public MainFragment() {}
 
-    public static MainFragment newInstance(String param1, String param2) {
-        MainFragment fragment = new MainFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -86,7 +68,67 @@ public class MainFragment extends Fragment {
         mCrushCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                mListener.onMainFragmentSelectCrush();
+                AsyncTask.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            AccessToken token = AccessToken.getCurrentAccessToken();
+                            String uid = Profile.getCurrentProfile().getId();
+                            URL url = new URL("http://10.0.2.2:3000/api/me/time");
+                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                            connection.setDoOutput(true);
+                            connection.setDoInput(true);
+                            connection.setRequestProperty("Content-Type", "application/json");
+                            connection.setRequestProperty("Accept", "application/json; charset=UTF-8");
+                            connection.setRequestMethod("POST");
+                            JSONObject object = new JSONObject();
+                            try {
+                                object.put("facebookId", uid);
+                                object.put("accessToken", token);
+                            } catch (JSONException e) {
+
+                            }
+                            OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
+                            wr.write(object.toString());
+                            wr.flush();
+                            if (connection.getResponseCode() == 200) {
+                                InputStream responseBody = connection.getInputStream();
+                                InputStreamReader responseBodyReader =
+                                        new InputStreamReader(responseBody, "UTF-8");
+                                JsonReader jsonReader = new JsonReader(responseBodyReader);
+                                jsonReader.beginObject();
+                                boolean canUpdate = false;
+                                while (jsonReader.hasNext()) {
+                                    String key = jsonReader.nextName();
+                                    if (key.equals("canUpdate")) {
+                                        canUpdate = jsonReader.nextBoolean();
+                                        break;
+                                    } else {
+                                        jsonReader.skipValue();
+                                    }
+                                }
+                                jsonReader.close();
+                                connection.disconnect();
+                                if (canUpdate) {
+                                    mListener.onMainFragmentSelectCrush();
+                                } else {
+                                    getActivity().runOnUiThread(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            Toast.makeText(getContext(),
+                                                    "You must wait 24 hours before you can select a new crush",
+                                                    Toast.LENGTH_LONG).show();
+                                        }
+                                    });
+                                }
+                            }
+                        } catch (MalformedURLException e) {
+
+                        } catch (IOException e) {
+
+                        }
+                    }
+                });
             }
         });
 
