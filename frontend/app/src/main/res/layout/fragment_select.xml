@@ -6,11 +6,13 @@
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
+        android:id="@+id/textview_select_crush"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="Who do you have a crush on?"
-        android:id="@+id/textview_select_crush" />
+        android:layout_margin="8dp"
+        android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"

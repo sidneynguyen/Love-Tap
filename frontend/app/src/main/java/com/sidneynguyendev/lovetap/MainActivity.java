@@ -54,26 +54,32 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onLoginFragmentSuccess(AccessToken token) {
         RestRequester requester = new RestRequester();
-        String url = "http://10.0.2.2:3000/auth/facebook/token?access_token=" + token.getToken();
-        requester.post(url, null, new RestRequester.OnJsonListener() {
-            @Override
-            public void onJson(Exception e, JsonReader jsonReader) {
-                if (e != null) {
-                    Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token?access_token=", e);
-                } else {
-                    try {
-                        while (jsonReader.hasNext()) {
-                            String key = jsonReader.nextName();
-                            Log.d(TAG, key + ": " + jsonReader.nextString());
+        String url = "http://10.0.2.2:3000/auth/facebook/token";
+        JSONObject body = new JSONObject();
+        try {
+            body.put("access_token", token.getToken());
+            requester.post(url, body, new RestRequester.OnJsonListener() {
+                @Override
+                public void onJson(Exception e, JsonReader jsonReader) {
+                    if (e != null) {
+                        Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", e);
+                    } else {
+                        try {
+                            while (jsonReader.hasNext()) {
+                                String key = jsonReader.nextName();
+                                Log.d(TAG, key + ": " + jsonReader.nextString());
+                            }
+                            getSupportFragmentManager().beginTransaction()
+                                    .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment).commit();
+                        } catch (IOException eIO) {
+                            Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", eIO);
                         }
-                        getSupportFragmentManager().beginTransaction()
-                                .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment).commit();
-                    } catch (IOException eIO) {
-                        Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token?access_token=", eIO);
                     }
                 }
-            }
-        });
+            });
+        } catch (JSONException e) {
+
+        }
     }
 
     @Override

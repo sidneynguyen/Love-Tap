@@ -95,7 +95,7 @@ public class MainFragment extends Fragment {
                                         @Override
                                         public void run() {
                                             Toast.makeText(getContext(),
-                                                    "You must wait 24 hours before you can select a new crush",
+                                                    "You can only select a new crush once every 24 hours",
                                                     Toast.LENGTH_LONG).show();
                                         }
                                     });
