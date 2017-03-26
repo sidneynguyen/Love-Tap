@@ -41,6 +41,20 @@ module.exports = {
       user.dateCrushUpdated = Date.now();
       user.save(callback);
     });
+  },
+
+  deleteUserCrushByFacebookIdAndAccessToken: function(id, token, callback) {
+    User.findOne({facebookId: id, accessToken: token}, function(err, user) {
+      if (err) {
+        return callback(err);
+      }
+      if (!user) {
+        return callback(null, null);
+      }
+      user.crushId = null;
+      user.crushName = null;
+      user.save(callback);
+    });
   }
 
 };

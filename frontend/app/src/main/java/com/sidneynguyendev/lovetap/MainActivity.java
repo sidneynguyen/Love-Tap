@@ -1,5 +1,6 @@
 package com.sidneynguyendev.lovetap;
 
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -29,9 +30,14 @@ public class MainActivity extends AppCompatActivity
 
     private static final String TAG = "MainActivity";
 
+    private static final int FRAG_LOGIN = 1;
+    private static final int FRAG_MAIN = 2;
+    private static final int FRAG_SEL = 3;
+
     private LoginFragment mLoginFragment;
     private MainFragment mMainFragment;
     private SelectFragment mSelectFragment;
+    private int mCurrFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +59,25 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void setFragment(int fragment) {
+        mCurrFragment = fragment;
+        switch (fragment) {
+            case FRAG_LOGIN:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.framelayout_main_fragmentcontainer, mLoginFragment).commit();
+                break;
+            case FRAG_MAIN:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment).commit();
+                break;
+            case FRAG_SEL:
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.framelayout_main_fragmentcontainer, mSelectFragment).commit();
+                break;
+        }
+        invalidateOptionsMenu();
+    }
+
     @Override
     public void onLoginFragmentSuccess(AccessToken token) {
         RestRequester requester = new RestRequester();
@@ -66,16 +91,7 @@ public class MainActivity extends AppCompatActivity
                     if (e != null) {
                         Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", e);
                     } else {
-                        try {
-                            while (jsonReader.hasNext()) {
-                                String key = jsonReader.nextName();
-                                Log.d(TAG, key + ": " + jsonReader.nextString());
-                            }
-                            getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment).commit();
-                        } catch (IOException eIO) {
-                            Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", eIO);
-                        }
+                        setFragment(FRAG_MAIN);
                     }
                 }
             });
@@ -86,14 +102,12 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onMainFragmentSelectCrush() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.framelayout_main_fragmentcontainer, mSelectFragment).commit();
+        setFragment(FRAG_SEL);
     }
 
     @Override
     public void onMainFragmentLogOut() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.framelayout_main_fragmentcontainer, mLoginFragment).commit();
+        setFragment(FRAG_LOGIN);
         mMainFragment = new MainFragment();
         mSelectFragment = new SelectFragment();
     }
@@ -121,9 +135,7 @@ public class MainActivity extends AppCompatActivity
                                 String key = jsonReader.nextName();
                                 Log.d(TAG, key + ": " + jsonReader.nextString());
                             }
-                            getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment)
-                                    .commit();
+                            setFragment(FRAG_MAIN);
                         } catch (IOException eIO) {
                             Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", eIO);
                         }
@@ -137,13 +149,29 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSelectFragmentCancel() {
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment).commit();
+        setFragment(FRAG_MAIN);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+        switch (mCurrFragment) {
+            case FRAG_LOGIN:
+                menu.findItem(R.id.menu_logout).setVisible(false);
+                menu.findItem(R.id.menu_cancel).setVisible(false);
+                menu.findItem(R.id.menu_clearcrush).setVisible(false);
+                break;
+            case FRAG_MAIN:
+                menu.findItem(R.id.menu_logout).setVisible(true);
+                menu.findItem(R.id.menu_cancel).setVisible(false);
+                menu.findItem(R.id.menu_clearcrush).setVisible(true);
+                break;
+            case FRAG_SEL:
+                menu.findItem(R.id.menu_logout).setVisible(true);
+                menu.findItem(R.id.menu_cancel).setVisible(true);
+                menu.findItem(R.id.menu_clearcrush).setVisible(false);
+                break;
+        }
         return true;
     }
 
@@ -153,13 +181,42 @@ public class MainActivity extends AppCompatActivity
         switch (id) {
             case R.id.menu_logout:
                 LoginManager.getInstance().logOut();
-                getSupportFragmentManager().beginTransaction()
-                        .replace(R.id.framelayout_main_fragmentcontainer, mLoginFragment).commit();
+                setFragment(FRAG_LOGIN);
                 mMainFragment = new MainFragment();
                 mSelectFragment = new SelectFragment();
                 return true;
+            case R.id.menu_cancel:
+                setFragment(FRAG_MAIN);
+                return true;
+            case R.id.menu_clearcrush:
+                clearCrush();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void clearCrush() {
+        AccessToken token = AccessToken.getCurrentAccessToken();
+        String uid = token.getUserId();
+        JSONObject body = new JSONObject();
+        try {
+            body.put("facebookId", uid);
+            body.put("accessToken", token.getToken());
+            RestRequester requester = new RestRequester();
+            String url = "http://10.0.2.2:3000/api/clear/crush";
+            requester.post(url, body, new RestRequester.OnJsonListener() {
+                @Override
+                public void onJson(Exception e, JsonReader jsonReader) {
+                    if (e != null) {
+                        Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", e);
+                    } else {
+                        getSupportFragmentManager().beginTransaction().detach(mMainFragment).attach(mMainFragment).commit();
+                    }
+                }
+            });
+        } catch (JSONException e) {
+            Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", e);
         }
     }
 }

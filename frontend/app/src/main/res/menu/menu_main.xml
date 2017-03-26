@@ -2,7 +2,15 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/menu_cancel"
+        android:title="@string/string_main_cancel"
+        app:showAsAction="ifRoom"/>
+    <item
+        android:id="@+id/menu_clearcrush"
+        android:title="@string/string_main_clearcrush"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/menu_logout"
-        android:title="Log Out"
+        android:title="@string/string_main_logout"
         app:showAsAction="never" />
 </menu>

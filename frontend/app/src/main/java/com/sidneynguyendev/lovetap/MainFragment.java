@@ -144,10 +144,20 @@ public class MainFragment extends Fragment {
                                     String key = jsonReader.nextName();
                                     switch (key) {
                                         case "crushId":
-                                            crushId = jsonReader.nextString();
+                                            try {
+                                                crushId = jsonReader.nextString();
+                                            } catch (IllegalStateException eISE) {
+                                                jsonReader.skipValue();
+                                                crushId = null;
+                                            }
                                             break;
                                         case "crushName":
-                                            crushName = jsonReader.nextString();
+                                            try {
+                                                crushName = jsonReader.nextString();
+                                            } catch (IllegalStateException eISE) {
+                                                jsonReader.skipValue();
+                                                crushName = null;
+                                            }
                                             break;
                                         case "me":
                                             crushMe = jsonReader.nextBoolean();

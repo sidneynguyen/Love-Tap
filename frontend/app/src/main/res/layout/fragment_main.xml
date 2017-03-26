@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="Your crush is"
+        android:text="@string/string_main_crushtext"
         android:layout_margin="8dp"
         android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
@@ -60,8 +60,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/textview_main_crushdecision"
+        android:layout_marginTop="16dp"
         android:layout_centerHorizontal="true"
-        android:text="You can select a new crush in"
+        android:text="@string/string_main_timedesc"
         android:textAppearance="@android:style/TextAppearance.Material.Medium" />
 
     <TextView
@@ -70,7 +71,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/textview_main_timedesc"
         android:layout_centerHorizontal="true"
-        android:text="00:00:00"
+        android:text="@string/string_main_defaulttime"
         android:textAppearance="@android:style/TextAppearance.Material.Large" />
 
 </RelativeLayout>

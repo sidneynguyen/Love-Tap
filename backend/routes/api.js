@@ -76,7 +76,20 @@ router.post('/crush', function(req, res) {
       res.json({err: 'Must wait 24 hours'});
     }
   });
-  
+});
+
+router.post('/clear/crush', function(req, res) {
+  var facebookId = req.body.facebookId;
+  var accessToken = req.body.accessToken;
+  db.deleteUserCrushByFacebookIdAndAccessToken(facebookId, accessToken, function(err, user) {
+    if (err) {
+      return res.send(err);
+    }
+    if (!user) {
+      return res.json({err: 'User not found'});
+    }
+    return res.json(user);
+  });
 });
 
 module.exports = router;

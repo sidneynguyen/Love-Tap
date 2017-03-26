@@ -36,8 +36,6 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
 
     private ArrayList<FbFriend> mFriendList;
 
-    private Button mCancelButton;
-
     public SelectFragment() {
     }
 
@@ -56,19 +54,12 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
         RecyclerView friendListView = (RecyclerView) view.findViewById(R.id.recyclerview_select_friendlist);
         friendListView.setLayoutManager(new LinearLayoutManager(getContext()));
         friendListView.setAdapter(mFriendListAdapter);
-        mCancelButton = (Button) view.findViewById(R.id.button_select_cancel);
         return view;
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        mCancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.onSelectFragmentCancel();
-            }
-        });
 
         AccessToken token = AccessToken.getCurrentAccessToken();
         if (token == null) {
