@@ -30,7 +30,6 @@ public class MainFragment extends Fragment {
     private OnMainFragmentInteractionListener mListener;
 
     private CardView mCrushCardView;
-    private Button mLogoutButton;
 
     private ProfilePictureView mCrushProfilePicView;
     private TextView mCrushTextView;
@@ -49,7 +48,6 @@ public class MainFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
         mCrushCardView = (CardView) view.findViewById(R.id.cardview_main_crush);
-        mLogoutButton = (Button) view.findViewById(R.id.button_main_logout);
         mCrushProfilePicView = (ProfilePictureView) view.findViewById(R.id.profilepicview_main_crush);
         mCrushTextView = (TextView) view.findViewById(R.id.textview_main_crushname);
         mCrushDecisionTextView = (TextView) view.findViewById(R.id.textview_main_crushdecision);
@@ -106,14 +104,6 @@ public class MainFragment extends Fragment {
                 } catch (JSONException e) {
 
                 }
-            }
-        });
-
-        mLogoutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LoginManager.getInstance().logOut();
-                mListener.onMainFragmentLogOut();
             }
         });
     }
