@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
@@ -34,6 +35,7 @@ public class MainFragment extends Fragment {
     private ProfilePictureView mCrushProfilePicView;
     private TextView mCrushTextView;
     private TextView mCrushDecisionTextView;
+    private TextView mTimeTextView;
 
     public MainFragment() {}
 
@@ -51,6 +53,7 @@ public class MainFragment extends Fragment {
         mCrushProfilePicView = (ProfilePictureView) view.findViewById(R.id.profilepicview_main_crush);
         mCrushTextView = (TextView) view.findViewById(R.id.textview_main_crushname);
         mCrushDecisionTextView = (TextView) view.findViewById(R.id.textview_main_crushdecision);
+        mTimeTextView = (TextView) view.findViewById(R.id.textview_main_time);
         return view;
     }
 
@@ -61,35 +64,18 @@ public class MainFragment extends Fragment {
         mCrushCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*AsyncTask.execute(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            AccessToken token = AccessToken.getCurrentAccessToken();
-                            String uid = Profile.getCurrentProfile().getId();
-                            URL url = new URL("http://10.0.2.2:3000/api/me/time");
-                            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                            connection.setDoOutput(true);
-                            connection.setDoInput(true);
-                            connection.setRequestProperty("Content-Type", "application/json");
-                            connection.setRequestProperty("Accept", "application/json; charset=UTF-8");
-                            connection.setRequestMethod("POST");
-                            JSONObject object = new JSONObject();
+                RestRequester requester = new RestRequester();
+                AccessToken token = AccessToken.getCurrentAccessToken();
+                String uid = token.getUserId();
+                String url = "http://10.0.2.2:3000/api/me/time";
+                JSONObject body = new JSONObject();
+                try {
+                    body.put("facebookId", uid);
+                    body.put("accessToken", token.getToken());
+                    requester.post(url, body, new RestRequester.OnJsonListener() {
+                        @Override
+                        public void onJson(Exception e, JsonReader jsonReader) {
                             try {
-                                object.put("facebookId", uid);
-                                object.put("accessToken", token);
-                            } catch (JSONException e) {
-
-                            }
-                            OutputStreamWriter wr = new OutputStreamWriter(connection.getOutputStream());
-                            wr.write(object.toString());
-                            wr.flush();
-                            if (connection.getResponseCode() == 200) {
-                                InputStream responseBody = connection.getInputStream();
-                                InputStreamReader responseBodyReader =
-                                        new InputStreamReader(responseBody, "UTF-8");
-                                JsonReader jsonReader = new JsonReader(responseBodyReader);
-                                jsonReader.beginObject();
                                 boolean canUpdate = false;
                                 while (jsonReader.hasNext()) {
                                     String key = jsonReader.nextName();
@@ -97,11 +83,9 @@ public class MainFragment extends Fragment {
                                         canUpdate = jsonReader.nextBoolean();
                                         break;
                                     } else {
-                                        jsonReader.skipValue();
+                                            jsonReader.skipValue();
                                     }
                                 }
-                                jsonReader.close();
-                                connection.disconnect();
                                 if (canUpdate) {
                                     mListener.onMainFragmentSelectCrush();
                                 } else {
@@ -114,15 +98,14 @@ public class MainFragment extends Fragment {
                                         }
                                     });
                                 }
+                            } catch (IOException eIO) {
+
                             }
-                        } catch (MalformedURLException e) {
-
-                        } catch (IOException e) {
-
                         }
-                    }
-                });*/
-                mListener.onMainFragmentSelectCrush();
+                    });
+                } catch (JSONException e) {
+
+                }
             }
         });
 
@@ -159,6 +142,7 @@ public class MainFragment extends Fragment {
                             String crushId = null;
                             String crushName = null;
                             boolean crushMe = false;
+                            long timeLeft = 0;
                             try {
                                 while (jsonReader.hasNext()) {
                                     String key = jsonReader.nextName();
@@ -172,12 +156,16 @@ public class MainFragment extends Fragment {
                                         case "me":
                                             crushMe = jsonReader.nextBoolean();
                                             break;
+                                        case "timeLeft":
+                                            timeLeft = jsonReader.nextLong();
+                                            break;
                                         default:
                                             jsonReader.skipValue();
                                             break;
                                     }
                                 }
-                                updateCrush(crushId, crushName, crushMe);
+                                Log.d(TAG, "timeLeft: " + timeLeft);
+                                updateUI(crushId, crushName, crushMe, timeLeft);
                             } catch (IOException eIO) {
                                 Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/crush", eIO);
                             }
@@ -190,19 +178,22 @@ public class MainFragment extends Fragment {
         }
     }
 
-    private void updateCrush(final String id, final String name, final boolean me) {
+    private void updateUI(final String id, final String name, final boolean me, final long timeLeft) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mCrushProfilePicView.setProfileId(id);
-                mCrushTextView.setText(name);
+                mTimeTextView.setText("" + timeLeft);
                 if (id != null && name != null) {
+                    mCrushProfilePicView.setProfileId(id);
+                    mCrushTextView.setText(name);
                     if (me) {
                         mCrushDecisionTextView.setText(name.toUpperCase() + " HAS A CRUSH ON YOU TOO!!!");
                     } else {
                         mCrushDecisionTextView.setText(name + " has not chosen you yet ;)");
                     }
                 } else {
+                    mCrushProfilePicView.setProfileId(null);
+                    mCrushTextView.setText("Select a crush!!!");
                     mCrushDecisionTextView.setText("");
                 }
             }

@@ -12,8 +12,8 @@ router.post('/me/time', function(req, res) {
     if (!user) {
       return res.json({err: 'User not found'});
     }
-    var date = new Date(Date.now());
-    var canUpdate = date.getUTCDay() > user.dateCrushUpdated.getUTCDay() && date.getUTCHours() >= user.dateCrushUpdated.getUTCHours();
+    var date = Date.now();
+    var canUpdate = user.dateCrushUpdated + 86400000 - date <= 0;
     res.json({
       canUpdate: canUpdate
     });
@@ -34,15 +34,19 @@ router.post('/me/crush', function(req, res) {
       if (err) {
         return res.send(err);
       }
-      if (!crush) {
-        return res.json(user);
+      if (crush) {
+        user.me = crush.crushId == user.facebookId;
       }
-      user.me = crush.crushId == user.facebookId;
-      console.log(user);
+      var date = Date.now();
+      var timeLeft = user.dateCrushUpdated + 86400000 - date;
+      if (timeLeft < 0) {
+        timeLeft = 0;
+      }
       res.json({
         crushId: user.crushId,
         crushName: user.crushName,
-        me: user.me
+        me: user.me,
+        timeLeft: timeLeft
       });
     });
   });
@@ -60,15 +64,8 @@ router.post('/crush', function(req, res) {
     if (!user) {
       return res.json({err: 'User not found'});
     }
-    var date = new Date(Date.now());
-    //if (!user.dateCrushUpdated) {
-      db.updateUserCrushByFacebookIdAndAccessToken(facebookId, accessToken, crushId, crushName, function(err, user) {
-        if (err) {
-          return res.send(err);
-        }
-        res.json(user);
-      });
-    /*} else if (date.getUTCDay() > user.dateCrushUpdated.getUTCDay() && date.getUTCHours() >= user.dateCrushUpdated.getUTCHours()) {
+    var date = Date.now();
+    if (user.dateCrushUpdated + 86400000 - date <= 0) {
       db.updateUserCrushByFacebookIdAndAccessToken(facebookId, accessToken, crushId, crushName, function(err, user) {
         if (err) {
           return res.send(err);
@@ -77,7 +74,7 @@ router.post('/crush', function(req, res) {
       });
     } else {
       res.json({err: 'Must wait 24 hours'});
-    }*/
+    }
   });
   
 });
