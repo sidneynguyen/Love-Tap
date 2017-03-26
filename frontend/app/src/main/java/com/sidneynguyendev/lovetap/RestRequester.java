@@ -13,11 +13,13 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 /**
- * Created by sidney on 3/25/17.
+ * File Name: RestRequester.java
+ * Authors: Sidney Nguyen
+ * Date Created: 3/25/17
  */
 
-public class RestRequester {
-    public void post(final String urlString, final JSONObject body, final OnJsonListener listener) {
+class RestRequester {
+    void post(final String urlString, final JSONObject body, final OnJsonListener listener) {
         AsyncTask.execute(new Runnable() {
             @Override
             public void run() {

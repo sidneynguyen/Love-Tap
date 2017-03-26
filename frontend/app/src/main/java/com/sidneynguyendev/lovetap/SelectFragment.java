@@ -21,13 +21,17 @@ import org.json.JSONException;
 
 import java.util.ArrayList;
 
+/**
+ * File Name: SelectFragment.java
+ * Authors: Sidney Nguyen
+ * Date Created: 3/26/17
+ */
 
 public class SelectFragment extends Fragment implements FriendListAdapter.OnFriendClickListener {
     private static final String TAG = "SelectFragment";
 
     private OnSelectFragmentInteractionListener mListener;
 
-    private RecyclerView mFriendListView;
     private FriendListAdapter mFriendListAdapter;
 
     private ArrayList<FbFriend> mFriendList;
@@ -49,9 +53,9 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_select, container, false);
-        mFriendListView = (RecyclerView) view.findViewById(R.id.recyclerview_select_friendlist);
-        mFriendListView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mFriendListView.setAdapter(mFriendListAdapter);
+        RecyclerView friendListView = (RecyclerView) view.findViewById(R.id.recyclerview_select_friendlist);
+        friendListView.setLayoutManager(new LinearLayoutManager(getContext()));
+        friendListView.setAdapter(mFriendListAdapter);
         mCancelButton = (Button) view.findViewById(R.id.button_select_cancel);
         return view;
     }
@@ -115,7 +119,7 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
         mListener.onSelectFragmentCrush(mFriendList.get(position).getId(), mFriendList.get(position).getName());
     }
 
-    public interface OnSelectFragmentInteractionListener {
+    interface OnSelectFragmentInteractionListener {
         void onSelectFragmentCrush(String crushId, String crushName);
         void onSelectFragmentCancel();
     }

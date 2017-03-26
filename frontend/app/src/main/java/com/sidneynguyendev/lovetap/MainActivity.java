@@ -1,16 +1,12 @@
 package com.sidneynguyendev.lovetap;
 
 import android.os.Bundle;
-import android.os.CountDownTimer;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
@@ -19,6 +15,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+
+/**
+ * File Name: MainActivity.java
+ * Authors: Sidney Nguyen
+ * Date Created: 3/26/17
+ */
 
 public class MainActivity extends AppCompatActivity
         implements LoginFragment.OnLoginFragmentInteractionListener,
@@ -78,7 +80,7 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         } catch (JSONException e) {
-
+            Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", e);
         }
     }
 

@@ -17,6 +17,11 @@ import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 
+/**
+ * File Name: LoginFragment.java
+ * Authors: Sidney Nguyen
+ * Date Created: 3/26/17
+ */
 
 public class LoginFragment extends Fragment {
     private static final String TAG = "LoginFragment";
@@ -89,7 +94,7 @@ public class LoginFragment extends Fragment {
         mCallbackManager.onActivityResult(requestCode, resultCode, data);
     }
 
-    public interface OnLoginFragmentInteractionListener {
+    interface OnLoginFragmentInteractionListener {
         void onLoginFragmentSuccess(AccessToken token);
     }
 }

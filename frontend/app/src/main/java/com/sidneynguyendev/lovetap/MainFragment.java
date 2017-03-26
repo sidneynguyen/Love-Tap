@@ -11,20 +11,22 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
-import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.util.Date;
 
+/**
+ * File Name: MainFragment.java
+ * Authors: Sidney Nguyen
+ * Date Created: 3/26/17
+ */
 
 public class MainFragment extends Fragment {
     private static final String TAG = "MainFragment";
@@ -101,12 +103,12 @@ public class MainFragment extends Fragment {
                                     });
                                 }
                             } catch (IOException eIO) {
-
+                                Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/time", eIO);
                             }
                         }
                     });
                 } catch (JSONException e) {
-
+                    Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/time", e);
                 }
             }
         });
@@ -236,7 +238,7 @@ public class MainFragment extends Fragment {
         mListener = null;
     }
 
-    public interface OnMainFragmentInteractionListener {
+    interface OnMainFragmentInteractionListener {
         void onMainFragmentSelectCrush();
         void onMainFragmentLogOut();
     }

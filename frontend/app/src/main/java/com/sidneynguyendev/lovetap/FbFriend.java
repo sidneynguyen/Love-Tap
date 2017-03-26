@@ -1,14 +1,16 @@
 package com.sidneynguyendev.lovetap;
 
 /**
- * Created by sidney on 3/19/17.
+ * File Name: FBFriend.java
+ * Authors: Sidney Nguyen
+ * Date Created: 3/19/17
  */
 
-public class FbFriend {
+class FbFriend {
     private String mId;
     private String mName;
 
-    public FbFriend(String id, String name) {
+    FbFriend(String id, String name) {
         mId = id;
         mName = name;
     }

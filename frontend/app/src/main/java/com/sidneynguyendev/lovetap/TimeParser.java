@@ -1,16 +1,18 @@
 package com.sidneynguyendev.lovetap;
 
 /**
- * Created by sidney on 3/26/17.
+ * File Name: TimeParser.java
+ * Authors: Sidney Nguyen
+ * Date Created: 3/26/17.
  */
 
-public class TimeParser {
+class TimeParser {
     private static final long MILLIS_IN_A_SEC = 1000;
     private static final long SECS_IN_A_HOUR = 3600;
     private static final long SECS_IN_A_MIN = 60;
     private static final long DOUBLE_DIGITS = 10;
 
-    public static String parseMillis(long millis) {
+    static String parseMillis(long millis) {
         long time = millis/MILLIS_IN_A_SEC;
         long hours = time/SECS_IN_A_HOUR;
         time %= SECS_IN_A_HOUR;
