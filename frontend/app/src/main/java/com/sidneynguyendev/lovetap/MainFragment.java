@@ -2,6 +2,7 @@ package com.sidneynguyendev.lovetap;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
@@ -22,6 +23,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.util.Date;
 
 
 public class MainFragment extends Fragment {
@@ -35,6 +37,8 @@ public class MainFragment extends Fragment {
     private TextView mCrushTextView;
     private TextView mCrushDecisionTextView;
     private TextView mTimeTextView;
+
+    private CountDownTimer mTimer;
 
     public MainFragment() {}
 
@@ -154,7 +158,6 @@ public class MainFragment extends Fragment {
                                             break;
                                     }
                                 }
-                                Log.d(TAG, "timeLeft: " + timeLeft);
                                 updateUI(crushId, crushName, crushMe, timeLeft);
                             } catch (IOException eIO) {
                                 Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/crush", eIO);
@@ -168,11 +171,21 @@ public class MainFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onStop() {
+        super.onStop();
+        if (mTimer != null) {
+            mTimer.cancel();
+            mTimer = null;
+        }
+    }
+
     private void updateUI(final String id, final String name, final boolean me, final long timeLeft) {
         getActivity().runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                mTimeTextView.setText("" + timeLeft);
+
+                mTimeTextView.setText(TimeParser.parseMillis(timeLeft));
                 if (id != null && name != null) {
                     mCrushProfilePicView.setProfileId(id);
                     mCrushTextView.setText(name);
@@ -186,6 +199,22 @@ public class MainFragment extends Fragment {
                     mCrushTextView.setText("Select a crush!!!");
                     mCrushDecisionTextView.setText("");
                 }
+                if (mTimer != null) {
+                    mTimer.cancel();
+                }
+                mTimer = new CountDownTimer(timeLeft, 1000) {
+                    @Override
+                    public void onTick(long millisUntilFinished) {
+                        mTimeTextView.setText(TimeParser.parseMillis(millisUntilFinished));
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        mTimeTextView.setText(TimeParser.parseMillis(0));
+                        mTimer = null;
+                    }
+                };
+                mTimer.start();
             }
         });
     }
