@@ -1,6 +1,5 @@
 package com.sidneynguyendev.lovetap;
 
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
