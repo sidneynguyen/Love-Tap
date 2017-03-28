@@ -118,12 +118,14 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
     }
 
     private void showErrorOnUIThread(final String err) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), err, Toast.LENGTH_LONG).show();
-            }
-        });
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getContext(), err, Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
 
 }

@@ -10,6 +10,10 @@
         android:title="@string/string_main_clearcrush"
         app:showAsAction="never" />
     <item
+        android:id="@+id/menu_refresh"
+        android:title="Refresh"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/menu_logout"
         android:title="@string/string_main_logout"
         app:showAsAction="never" />

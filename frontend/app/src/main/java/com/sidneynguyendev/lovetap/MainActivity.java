@@ -7,6 +7,8 @@ import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
@@ -39,12 +41,16 @@ public class MainActivity extends AppCompatActivity
     private SelectFragment mSelectFragment;
     private int mCurrFragment;
 
+    private ProgressBar mProgressBar;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        mProgressBar = (ProgressBar) findViewById(R.id.progressbar_main);
 
         mLoginFragment = new LoginFragment();
         mMainFragment = new MainFragment();
@@ -83,6 +89,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onLoginFragmentSuccess(AccessToken token) {
+        setProgressBarVisibility(View.VISIBLE);
         RestRequester requester = new RestRequester();
         String url = "http://10.0.2.2:3000/auth/facebook/token";
         JSONObject body = new JSONObject();
@@ -91,6 +98,7 @@ public class MainActivity extends AppCompatActivity
             requester.post(url, body, new RestRequester.OnJsonListener() {
                 @Override
                 public void onJson(Exception e, JsonReader jsonReader) {
+                    setProgressBarVisibility(View.GONE);
                     if (e != null) {
                         Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", e);
                         showErrorOnUIThread("An error has occurred when trying to log in. Please try again.");
@@ -104,6 +112,7 @@ public class MainActivity extends AppCompatActivity
         } catch (JSONException e) {
             Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", e);
             showErrorOnUIThread("An error has occurred when trying to log in. Please try again.");
+            setProgressBarVisibility(View.GONE);
             LoginManager.getInstance().logOut();
             setFragment(FRAG_LOGIN);
         }
@@ -123,6 +132,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onSelectFragmentCrush(final String crushId, final String crushName) {
+        setProgressBarVisibility(View.VISIBLE);
         AccessToken token = AccessToken.getCurrentAccessToken();
         String uid = token.getUserId();
         JSONObject body = new JSONObject();
@@ -136,6 +146,7 @@ public class MainActivity extends AppCompatActivity
             requester.post(url, body, new RestRequester.OnJsonListener() {
                 @Override
                 public void onJson(Exception e, JsonReader jsonReader) {
+                    setProgressBarVisibility(View.GONE);
                     if (e != null) {
                         Log.e(TAG, "POST to http://10.0.2.2:3000/api/select/crush", e);
                         showErrorOnUIThread("Could not connect to the server. Please try again.");
@@ -162,6 +173,7 @@ public class MainActivity extends AppCompatActivity
         } catch (JSONException e) {
             Log.e(TAG, "POST to http://10.0.2.2:3000/api/select/crush", e);
             showErrorOnUIThread("Could not connect to the server. Please try again.");
+            setProgressBarVisibility(View.GONE);
         }
     }
 
@@ -189,6 +201,11 @@ public class MainActivity extends AppCompatActivity
                 menu.findItem(R.id.menu_cancel).setVisible(true);
                 menu.findItem(R.id.menu_clearcrush).setVisible(false);
                 break;
+            default:
+                menu.findItem(R.id.menu_logout).setVisible(false);
+                menu.findItem(R.id.menu_cancel).setVisible(false);
+                menu.findItem(R.id.menu_clearcrush).setVisible(false);
+                break;
         }
         return true;
     }
@@ -209,12 +226,16 @@ public class MainActivity extends AppCompatActivity
             case R.id.menu_clearcrush:
                 clearCrush();
                 return true;
+            case R.id.menu_refresh:
+                recreate();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     private void clearCrush() {
+        setProgressBarVisibility(View.VISIBLE);
         AccessToken token = AccessToken.getCurrentAccessToken();
         String uid = token.getUserId();
         JSONObject body = new JSONObject();
@@ -226,6 +247,7 @@ public class MainActivity extends AppCompatActivity
             requester.post(url, body, new RestRequester.OnJsonListener() {
                 @Override
                 public void onJson(Exception e, JsonReader jsonReader) {
+                    setProgressBarVisibility(View.GONE);
                     if (e != null) {
                         Log.e(TAG, "POST to http://10.0.2.2:3000/api/clear/crush", e);
                         showErrorOnUIThread("Could not connect to the server. Please try again.");
@@ -252,6 +274,7 @@ public class MainActivity extends AppCompatActivity
         } catch (JSONException e) {
             Log.e(TAG, "POST to http://10.0.2.2:3000/api/clear/crush", e);
             showErrorOnUIThread("Could not connect to the server. Please try again.");
+            setProgressBarVisibility(View.GONE);
         }
     }
 
@@ -283,6 +306,15 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void run() {
                 Toast.makeText(MainActivity.this, err, Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void setProgressBarVisibility(final int visibility) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                mProgressBar.setVisibility(visibility);
             }
         });
     }

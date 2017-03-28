@@ -27,6 +27,8 @@ class RestRequester {
                 try {
                     URL url = new URL(urlString);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    conn.setConnectTimeout(20000);
+                    conn.setReadTimeout(20000);
                     conn.setDoOutput(true);
                     conn.setDoInput(true);
                     conn.setRequestProperty("Content-Type", "application/json");

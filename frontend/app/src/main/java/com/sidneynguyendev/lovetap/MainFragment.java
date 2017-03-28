@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -43,6 +44,8 @@ public class MainFragment extends Fragment {
 
     private CountDownTimer mTimer;
 
+    private ProgressBar mProgressBar;
+
     public MainFragment() {}
 
     @Override
@@ -59,6 +62,7 @@ public class MainFragment extends Fragment {
         mCrushTextView = (TextView) view.findViewById(R.id.textview_main_crushname);
         mCrushDecisionTextView = (TextView) view.findViewById(R.id.textview_main_crushdecision);
         mTimeTextView = (TextView) view.findViewById(R.id.textview_main_time);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressbar_mainfrag);
         return view;
     }
 
@@ -69,6 +73,7 @@ public class MainFragment extends Fragment {
         mCrushCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setProgressBarVisibility(View.VISIBLE);
                 RestRequester requester = new RestRequester();
                 AccessToken token = AccessToken.getCurrentAccessToken();
                 String uid = token.getUserId();
@@ -80,6 +85,7 @@ public class MainFragment extends Fragment {
                     requester.post(url, body, new RestRequester.OnJsonListener() {
                         @Override
                         public void onJson(Exception e, JsonReader jsonReader) {
+                            setProgressBarVisibility(View.GONE);
                             if (e != null) {
                                 Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/time", e);
                                 showErrorOnUIThread("Could not connect to the server. Please try again.");
@@ -122,6 +128,7 @@ public class MainFragment extends Fragment {
                 } catch (JSONException e) {
                     Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/time", e);
                     showErrorOnUIThread("Could not connect to the server. Please try again.");
+                    setProgressBarVisibility(View.GONE);
                 }
             }
         });
@@ -135,6 +142,7 @@ public class MainFragment extends Fragment {
             Log.d(TAG, "User not logged in");
             mListener.onMainFragmentLogOut();
         } else {
+            setProgressBarVisibility(View.VISIBLE);
             String uid = token.getUserId();
             JSONObject body = new JSONObject();
             try {
@@ -145,6 +153,7 @@ public class MainFragment extends Fragment {
                 requester.post(url, body, new RestRequester.OnJsonListener() {
                     @Override
                     public void onJson(Exception e, JsonReader jsonReader) {
+                        setProgressBarVisibility(View.GONE);
                         if (e != null) {
                             Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/crush", e);
                             showErrorOnUIThread("Could not connect to the server. Please try again.");
@@ -200,6 +209,7 @@ public class MainFragment extends Fragment {
             } catch (JSONException e) {
                 Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/crush", e);
                 showErrorOnUIThread("Could not connect to the server. Please try again.");
+                setProgressBarVisibility(View.GONE);
             }
         }
     }
@@ -214,42 +224,44 @@ public class MainFragment extends Fragment {
     }
 
     private void updateUI(final String id, final String name, final boolean me, final long timeLeft) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
 
-                mTimeTextView.setText(TimeParser.parseMillis(timeLeft));
-                if (id != null && name != null) {
-                    mCrushProfilePicView.setProfileId(id);
-                    mCrushTextView.setText(name);
-                    if (me) {
-                        mCrushDecisionTextView.setText(name.toUpperCase() + " HAS A CRUSH ON YOU TOO!!!");
+                    mTimeTextView.setText(TimeParser.parseMillis(timeLeft));
+                    if (id != null && name != null) {
+                        mCrushProfilePicView.setProfileId(id);
+                        mCrushTextView.setText(name);
+                        if (me) {
+                            mCrushDecisionTextView.setText(name.toUpperCase() + " HAS A CRUSH ON YOU TOO!!!");
+                        } else {
+                            mCrushDecisionTextView.setText(name + " has not chosen you yet ;)");
+                        }
                     } else {
-                        mCrushDecisionTextView.setText(name + " has not chosen you yet ;)");
+                        mCrushProfilePicView.setProfileId(null);
+                        mCrushTextView.setText("Select a crush!!!");
+                        mCrushDecisionTextView.setText("");
                     }
-                } else {
-                    mCrushProfilePicView.setProfileId(null);
-                    mCrushTextView.setText("Select a crush!!!");
-                    mCrushDecisionTextView.setText("");
-                }
-                if (mTimer != null) {
-                    mTimer.cancel();
-                }
-                mTimer = new CountDownTimer(timeLeft, 1000) {
-                    @Override
-                    public void onTick(long millisUntilFinished) {
-                        mTimeTextView.setText(TimeParser.parseMillis(millisUntilFinished));
+                    if (mTimer != null) {
+                        mTimer.cancel();
                     }
+                    mTimer = new CountDownTimer(timeLeft, 1000) {
+                        @Override
+                        public void onTick(long millisUntilFinished) {
+                            mTimeTextView.setText(TimeParser.parseMillis(millisUntilFinished));
+                        }
 
-                    @Override
-                    public void onFinish() {
-                        mTimeTextView.setText(TimeParser.parseMillis(0));
-                        mTimer = null;
-                    }
-                };
-                mTimer.start();
-            }
-        });
+                        @Override
+                        public void onFinish() {
+                            mTimeTextView.setText(TimeParser.parseMillis(0));
+                            mTimer = null;
+                        }
+                    };
+                    mTimer.start();
+                }
+            });
+        }
     }
 
     @Override
@@ -296,11 +308,24 @@ public class MainFragment extends Fragment {
     }
 
     private void showErrorOnUIThread(final String err) {
-        getActivity().runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                Toast.makeText(getContext(), err, Toast.LENGTH_LONG).show();
-            }
-        });
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    Toast.makeText(getContext(), err, Toast.LENGTH_LONG).show();
+                }
+            });
+        }
+    }
+
+    private void setProgressBarVisibility(final int visibility) {
+        if (getActivity() != null) {
+            getActivity().runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mProgressBar.setVisibility(visibility);
+                }
+            });
+        }
     }
 }

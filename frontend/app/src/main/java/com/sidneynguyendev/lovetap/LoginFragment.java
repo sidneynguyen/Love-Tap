@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -31,7 +32,6 @@ public class LoginFragment extends Fragment {
 
     private CallbackManager mCallbackManager;
     private LoginButton mLoginButton;
-    private ProgressBar mProgressBar;
 
     public LoginFragment() {}
 
@@ -46,7 +46,6 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         mLoginButton = (LoginButton) view.findViewById(R.id.loginbutton_login_fb);
-        mProgressBar = (ProgressBar) view.findViewById(R.id.progressbar_login);
         return view;
     }
 
@@ -59,7 +58,6 @@ public class LoginFragment extends Fragment {
             @Override
             public void onSuccess(LoginResult loginResult) {
                 mLoginButton.setVisibility(View.GONE);
-                mProgressBar.setVisibility(View.VISIBLE);
                 mListener.onLoginFragmentSuccess(loginResult.getAccessToken());
             }
 
@@ -71,6 +69,7 @@ public class LoginFragment extends Fragment {
             @Override
             public void onError(FacebookException error) {
                 Log.e(TAG, "FB login error", error);
+                Toast.makeText(getContext(), "An error has occurred when trying to log in. Please try again.", Toast.LENGTH_LONG).show();
             }
         });
     }
