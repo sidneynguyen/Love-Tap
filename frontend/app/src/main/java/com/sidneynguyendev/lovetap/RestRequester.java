@@ -2,6 +2,7 @@ package com.sidneynguyendev.lovetap;
 
 import android.os.AsyncTask;
 import android.util.JsonReader;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -45,6 +46,8 @@ class RestRequester {
                         listener.onJson(null, jsonReader);
                         jsonReader.close();
                         conn.disconnect();
+                    } else {
+                        listener.onJson(new Exception("Could not establish a connection."), null);
                     }
                 } catch (IOException e) {
                     listener.onJson(e, null);

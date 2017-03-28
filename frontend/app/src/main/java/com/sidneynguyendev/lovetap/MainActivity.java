@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity
         mCurrFragment = fragment;
         switch (fragment) {
             case FRAG_LOGIN:
+                mLoginFragment = new LoginFragment();
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.framelayout_main_fragmentcontainer, mLoginFragment).commit();
                 invalidateOptionsMenu();
@@ -265,6 +266,11 @@ public class MainActivity extends AppCompatActivity
                 break;
             case ErrorCodes.ERR_USER_NOT_FOUND:
                 Log.e(TAG, "ERROR USER NOT FOUND");
+                showErrorOnUIThread("An error has occurred. You have been logged out.");
+                LoginManager.getInstance().logOut();
+                setFragment(FRAG_LOGIN);
+                mMainFragment = new MainFragment();
+                mSelectFragment = new SelectFragment();
                 break;
             default:
                 Log.e(TAG, "ERROR UNKNOWN: " + error);

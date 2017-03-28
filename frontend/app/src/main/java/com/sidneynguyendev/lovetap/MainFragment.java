@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.facebook.AccessToken;
+import com.facebook.login.LoginManager;
 import com.facebook.login.widget.ProfilePictureView;
 
 import org.json.JSONException;
@@ -279,10 +280,14 @@ public class MainFragment extends Fragment {
                 Log.e(TAG, "ERROR DATABASE");
                 break;
             case ErrorCodes.ERR_24_HOURS_NOT_PASSED:
+                Log.e(TAG, "ERROR 24 HOURS NOT PASSED");
                 showErrorOnUIThread("You can only select a new crush once every 24 hours");
                 break;
             case ErrorCodes.ERR_USER_NOT_FOUND:
-                Log.e(TAG, "ERROR DATABASE");
+                Log.e(TAG, "ERROR USER NOT FOUND");
+                showErrorOnUIThread("An error has occurred. You have been logged out.");
+                LoginManager.getInstance().logOut();
+                mListener.onMainFragmentLogOut();
                 break;
             default:
                 Log.e(TAG, "ERROR UNKNOWN: " + error);

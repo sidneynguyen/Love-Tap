@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
@@ -30,6 +31,7 @@ public class LoginFragment extends Fragment {
 
     private CallbackManager mCallbackManager;
     private LoginButton mLoginButton;
+    private ProgressBar mProgressBar;
 
     public LoginFragment() {}
 
@@ -44,6 +46,7 @@ public class LoginFragment extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_login, container, false);
         mLoginButton = (LoginButton) view.findViewById(R.id.loginbutton_login_fb);
+        mProgressBar = (ProgressBar) view.findViewById(R.id.progressbar_login);
         return view;
     }
 
@@ -55,8 +58,9 @@ public class LoginFragment extends Fragment {
         mLoginButton.registerCallback(mCallbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
+                mLoginButton.setVisibility(View.GONE);
+                mProgressBar.setVisibility(View.VISIBLE);
                 mListener.onLoginFragmentSuccess(loginResult.getAccessToken());
-                loginResult.getAccessToken().getUserId();
             }
 
             @Override
