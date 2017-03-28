@@ -1,4 +1,5 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -8,7 +9,35 @@
         android:id="@+id/loginbutton_login_fb"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:layout_below="@+id/textview_login_desc"
+        android:layout_centerHorizontal="true"
+        android:layout_margin="32dp" />
+
+    <ImageView
+        android:id="@+id/imageview_login_lovetap"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
+        android:layout_margin="32dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        app:srcCompat="@drawable/love_tap" />
+
+    <TextView
+        android:id="@+id/textview_login_lovetap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/imageview_login_lovetap"
+        android:layout_centerHorizontal="true"
+        android:text="Love Tap"
+        android:textAppearance="@android:style/TextAppearance.Material.Large" />
+
+    <TextView
+        android:id="@+id/textview_login_desc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/textview_login_lovetap"
+        android:layout_centerHorizontal="true"
+        android:text="Find out if your crush likes you back!"
+        android:textAppearance="@android:style/TextAppearance.Material.Small" />
 
 </RelativeLayout>

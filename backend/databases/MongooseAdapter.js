@@ -3,9 +3,9 @@ var mongoose = require('mongoose');
 
 module.exports = {
   User: {},
-  connect: function() {
+  connect: function(uri) {
     mongoose.Promise = global.Promise;
-    mongoose.connect('mongodb://localhost:27017/lovetap');
+    mongoose.connect(uri);
     require('../models/user');
     User = mongoose.model('User');
   },

@@ -13,7 +13,7 @@ var passport = require('passport');
 var FacebookTokenStrategy = require('passport-facebook-token');
 var secrets = require('./secrets');
 var db = require('./databases/MongooseAdapter');
-db.connect();
+db.connect(secrets.databaseURI);
 
 var app = express();
 
