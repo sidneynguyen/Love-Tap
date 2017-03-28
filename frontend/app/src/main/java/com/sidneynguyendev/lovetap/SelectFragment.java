@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
@@ -81,6 +81,8 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
                             }
                         } catch (JSONException e) {
                             Log.e(TAG, "My friends request", e);
+                            showErrorOnUIThread("Could not get friends list. Please try again.");
+
                         }
                     }
                 }
@@ -113,6 +115,15 @@ public class SelectFragment extends Fragment implements FriendListAdapter.OnFrie
     interface OnSelectFragmentInteractionListener {
         void onSelectFragmentCrush(String crushId, String crushName);
         void onSelectFragmentCancel();
+    }
+
+    private void showErrorOnUIThread(final String err) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getContext(), err, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 
 }

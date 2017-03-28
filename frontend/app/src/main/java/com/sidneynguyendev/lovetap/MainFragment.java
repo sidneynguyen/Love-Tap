@@ -71,7 +71,7 @@ public class MainFragment extends Fragment {
                 RestRequester requester = new RestRequester();
                 AccessToken token = AccessToken.getCurrentAccessToken();
                 String uid = token.getUserId();
-                String url = "http://10.0.2.2:3000/api/me/time";
+                String url = "http://10.0.2.2:3000/api/get/time";
                 JSONObject body = new JSONObject();
                 try {
                     body.put("facebookId", uid);
@@ -79,36 +79,48 @@ public class MainFragment extends Fragment {
                     requester.post(url, body, new RestRequester.OnJsonListener() {
                         @Override
                         public void onJson(Exception e, JsonReader jsonReader) {
-                            try {
-                                boolean canUpdate = false;
-                                while (jsonReader.hasNext()) {
-                                    String key = jsonReader.nextName();
-                                    if (key.equals("canUpdate")) {
-                                        canUpdate = jsonReader.nextBoolean();
-                                        break;
-                                    } else {
+                            if (e != null) {
+                                Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/time", e);
+                                showErrorOnUIThread("Could not connect to the server. Please try again.");
+                            } else {
+                                try {
+                                    boolean canUpdate = false;
+                                    while (jsonReader.hasNext()) {
+                                        String key = jsonReader.nextName();
+                                        if (key.equals("canUpdate")) {
+                                            canUpdate = jsonReader.nextBoolean();
+                                            break;
+                                        } else if (key.equals("err")) {
+                                            int error = jsonReader.nextInt();
+                                            showErrorOnUIThread("Could not connect to the server. Please try again.");
+                                            handleError(error);
+                                            return;
+                                        } else{
                                             jsonReader.skipValue();
-                                    }
-                                }
-                                if (canUpdate) {
-                                    mListener.onMainFragmentSelectCrush();
-                                } else {
-                                    getActivity().runOnUiThread(new Runnable() {
-                                        @Override
-                                        public void run() {
-                                            Toast.makeText(getContext(),
-                                                    "You can only select a new crush once every 24 hours",
-                                                    Toast.LENGTH_LONG).show();
                                         }
-                                    });
+                                    }
+                                    if (canUpdate) {
+                                        mListener.onMainFragmentSelectCrush();
+                                    } else {
+                                        getActivity().runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Toast.makeText(getContext(),
+                                                        "You can only select a new crush once every 24 hours",
+                                                        Toast.LENGTH_LONG).show();
+                                            }
+                                        });
+                                    }
+                                } catch (IOException eIO) {
+                                    Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/time", eIO);
+                                    showErrorOnUIThread("Could not connect to the server. Please try again.");
                                 }
-                            } catch (IOException eIO) {
-                                Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/time", eIO);
                             }
                         }
                     });
                 } catch (JSONException e) {
-                    Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/time", e);
+                    Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/time", e);
+                    showErrorOnUIThread("Could not connect to the server. Please try again.");
                 }
             }
         });
@@ -127,13 +139,14 @@ public class MainFragment extends Fragment {
             try {
                 body.put("facebookId", uid);
                 body.put("accessToken", token.getToken());
-                String url = "http://10.0.2.2:3000/api/me/crush";
+                String url = "http://10.0.2.2:3000/api/get/crush";
                 RestRequester requester = new RestRequester();
                 requester.post(url, body, new RestRequester.OnJsonListener() {
                     @Override
                     public void onJson(Exception e, JsonReader jsonReader) {
                         if (e != null) {
-                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/crush", e);
+                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/crush", e);
+                            showErrorOnUIThread("Could not connect to the server. Please try again.");
                         } else {
                             String crushId = null;
                             String crushName = null;
@@ -165,6 +178,11 @@ public class MainFragment extends Fragment {
                                         case "timeLeft":
                                             timeLeft = jsonReader.nextLong();
                                             break;
+                                        case "err":
+                                            int error = jsonReader.nextInt();
+                                            showErrorOnUIThread("Could not connect to the server. Please try again.");
+                                            handleError(error);
+                                            return;
                                         default:
                                             jsonReader.skipValue();
                                             break;
@@ -172,13 +190,15 @@ public class MainFragment extends Fragment {
                                 }
                                 updateUI(crushId, crushName, crushMe, timeLeft);
                             } catch (IOException eIO) {
-                                Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/crush", eIO);
+                                Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/crush", eIO);
+                                showErrorOnUIThread("Could not connect to the server. Please try again.");
                             }
                         }
                     }
                 });
             } catch (JSONException e) {
-                Log.e(TAG, "POST to http://10.0.2.2:3000/api/me/crush", e);
+                Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/crush", e);
+                showErrorOnUIThread("Could not connect to the server. Please try again.");
             }
         }
     }
@@ -251,5 +271,31 @@ public class MainFragment extends Fragment {
     interface OnMainFragmentInteractionListener {
         void onMainFragmentSelectCrush();
         void onMainFragmentLogOut();
+    }
+
+    private void handleError(int error) {
+        switch (error) {
+            case ErrorCodes.ERR_DATABASE:
+                Log.e(TAG, "ERROR DATABASE");
+                break;
+            case ErrorCodes.ERR_24_HOURS_NOT_PASSED:
+                showErrorOnUIThread("You can only select a new crush once every 24 hours");
+                break;
+            case ErrorCodes.ERR_USER_NOT_FOUND:
+                Log.e(TAG, "ERROR DATABASE");
+                break;
+            default:
+                Log.e(TAG, "ERROR UNKNOWN: " + error);
+                break;
+        }
+    }
+
+    private void showErrorOnUIThread(final String err) {
+        getActivity().runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(getContext(), err, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

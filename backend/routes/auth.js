@@ -1,15 +1,15 @@
+/**
+ * File Name: auth.js
+ * Authors: Sidney Nguyen
+ * Date Created: 3/27/17
+ */
+
 var express = require('express');
 var router = express.Router();
 var passport = require('passport');
 var FacebookTokenStrategy = require('passport-facebook-token');
 var secrets = require('../secrets');
 var db = require('../databases/MongooseAdapter');
-
-router.get('/', function(req, res) {
-  res.json({
-    isAuthenticated: req.isAuthenticated()
-  });
-});
 
 router.post('/facebook/token',
   passport.authenticate('facebook-token'),

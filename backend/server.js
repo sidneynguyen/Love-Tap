@@ -1,3 +1,9 @@
+/**
+ * File Name: server.js
+ * Authors: Sidney Nguyen
+ * Date Created: 3/27/17
+ */
+
 var express = require('express');
 var path = require('path');
 var bodyParser = require('body-parser');
@@ -5,6 +11,7 @@ var mongoose = require('mongoose');
 var session = require('express-session');
 var passport = require('passport');
 var FacebookTokenStrategy = require('passport-facebook-token');
+var secrets = require('./secrets');
 var db = require('./databases/MongooseAdapter');
 db.connect();
 
@@ -16,7 +23,7 @@ var auth = require('./routes/auth');
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(session({
-  secret: 'Love is an open door',
+  secret: secrets.sessionSecret,
   saveUninitialized: true,
   resave: true
 }));

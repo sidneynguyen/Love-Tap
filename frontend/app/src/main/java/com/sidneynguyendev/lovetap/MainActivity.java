@@ -7,6 +7,7 @@ import android.util.JsonReader;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
@@ -51,8 +52,7 @@ public class MainActivity extends AppCompatActivity
 
         AccessToken token = AccessToken.getCurrentAccessToken();
         if (token == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.framelayout_main_fragmentcontainer, mLoginFragment).commit();
+            setFragment(FRAG_LOGIN);
         } else {
             onLoginFragmentSuccess(token);
         }
@@ -64,14 +64,17 @@ public class MainActivity extends AppCompatActivity
             case FRAG_LOGIN:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.framelayout_main_fragmentcontainer, mLoginFragment).commit();
+                invalidateOptionsMenu();
                 break;
             case FRAG_MAIN:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.framelayout_main_fragmentcontainer, mMainFragment).commit();
+                invalidateOptionsMenu();
                 break;
             case FRAG_SEL:
                 getSupportFragmentManager().beginTransaction()
                         .replace(R.id.framelayout_main_fragmentcontainer, mSelectFragment).commit();
+                invalidateOptionsMenu();
                 break;
         }
         invalidateOptionsMenu();
@@ -89,6 +92,9 @@ public class MainActivity extends AppCompatActivity
                 public void onJson(Exception e, JsonReader jsonReader) {
                     if (e != null) {
                         Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", e);
+                        showErrorOnUIThread("An error has occurred when trying to log in. Please try again.");
+                        LoginManager.getInstance().logOut();
+                        setFragment(FRAG_LOGIN);
                     } else {
                         setFragment(FRAG_MAIN);
                     }
@@ -96,6 +102,9 @@ public class MainActivity extends AppCompatActivity
             });
         } catch (JSONException e) {
             Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", e);
+            showErrorOnUIThread("An error has occurred when trying to log in. Please try again.");
+            LoginManager.getInstance().logOut();
+            setFragment(FRAG_LOGIN);
         }
     }
 
@@ -122,27 +131,36 @@ public class MainActivity extends AppCompatActivity
             body.put("crushId", crushId);
             body.put("crushName", crushName);
             RestRequester requester = new RestRequester();
-            String url = "http://10.0.2.2:3000/api/crush";
+            String url = "http://10.0.2.2:3000/api/select/crush";
             requester.post(url, body, new RestRequester.OnJsonListener() {
                 @Override
                 public void onJson(Exception e, JsonReader jsonReader) {
                     if (e != null) {
-                        Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", e);
+                        Log.e(TAG, "POST to http://10.0.2.2:3000/api/select/crush", e);
+                        showErrorOnUIThread("Could not connect to the server. Please try again.");
                     } else {
                         try {
                             while (jsonReader.hasNext()) {
                                 String key = jsonReader.nextName();
-                                Log.d(TAG, key + ": " + jsonReader.nextString());
+                                if (key.equals("err")) {
+                                    int error = jsonReader.nextInt();
+                                    handleError(error);
+                                    return;
+                                } else {
+                                    jsonReader.skipValue();
+                                }
                             }
                             setFragment(FRAG_MAIN);
                         } catch (IOException eIO) {
-                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", eIO);
+                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/select/crush", eIO);
+                            showErrorOnUIThread("Could not connect to the server. Please try again.");
                         }
                     }
                 }
             });
         } catch (JSONException e) {
-            Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", e);
+            Log.e(TAG, "POST to http://10.0.2.2:3000/api/select/crush", e);
+            showErrorOnUIThread("Could not connect to the server. Please try again.");
         }
     }
 
@@ -208,14 +226,58 @@ public class MainActivity extends AppCompatActivity
                 @Override
                 public void onJson(Exception e, JsonReader jsonReader) {
                     if (e != null) {
-                        Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", e);
+                        Log.e(TAG, "POST to http://10.0.2.2:3000/api/clear/crush", e);
+                        showErrorOnUIThread("Could not connect to the server. Please try again.");
                     } else {
-                        getSupportFragmentManager().beginTransaction().detach(mMainFragment).attach(mMainFragment).commit();
+                        try {
+                            while (jsonReader.hasNext()) {
+                                String key = jsonReader.nextName();
+                                if (key.equals("err")) {
+                                    int error = jsonReader.nextInt();
+                                    handleError(error);
+                                    return;
+                                } else {
+                                    jsonReader.skipValue();
+                                }
+                            }
+                            getSupportFragmentManager().beginTransaction().detach(mMainFragment).attach(mMainFragment).commit();
+                        } catch (IOException eIO) {
+                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/clear/crush", e);
+                            showErrorOnUIThread("Could not connect to the server. Please try again.");
+                        }
                     }
                 }
             });
         } catch (JSONException e) {
-            Log.e(TAG, "POST to http://10.0.2.2:3000/api/crush", e);
+            Log.e(TAG, "POST to http://10.0.2.2:3000/api/clear/crush", e);
+            showErrorOnUIThread("Could not connect to the server. Please try again.");
         }
+    }
+
+    private void handleError(int error) {
+        switch (error) {
+            case ErrorCodes.ERR_DATABASE:
+                Log.e(TAG, "ERROR DATABASE");
+                break;
+            case ErrorCodes.ERR_24_HOURS_NOT_PASSED:
+                Log.e(TAG, "ERROR 24 HOURS NOT PASSED");
+                showErrorOnUIThread("You can only select a new crush once every 24 hours");
+                break;
+            case ErrorCodes.ERR_USER_NOT_FOUND:
+                Log.e(TAG, "ERROR USER NOT FOUND");
+                break;
+            default:
+                Log.e(TAG, "ERROR UNKNOWN: " + error);
+                break;
+        }
+    }
+
+    private void showErrorOnUIThread(final String err) {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast.makeText(MainActivity.this, err, Toast.LENGTH_LONG).show();
+            }
+        });
     }
 }

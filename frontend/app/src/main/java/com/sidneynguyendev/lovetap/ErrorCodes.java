@@ -9,4 +9,6 @@ package com.sidneynguyendev.lovetap;
 
 public class ErrorCodes {
     public static final int ERR_USER_NOT_FOUND = 420;
+    public static final int ERR_DATABASE = 1337;
+    public static final int ERR_24_HOURS_NOT_PASSED = 666;
 }
