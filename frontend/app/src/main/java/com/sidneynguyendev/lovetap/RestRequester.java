@@ -26,7 +26,6 @@ class RestRequester {
             public void run() {
                 try {
                     URL url = new URL(Secrets.SERVER_URL + urlString);
-                    Log.d("HERE", Secrets.SERVER_URL + urlString);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setConnectTimeout(20000);
                     conn.setReadTimeout(20000);
