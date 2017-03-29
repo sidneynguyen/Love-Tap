@@ -11,7 +11,7 @@
         app:showAsAction="never" />
     <item
         android:id="@+id/menu_refresh"
-        android:title="Refresh"
+        android:title="@string/menu_refresh"
         app:showAsAction="never" />
     <item
         android:id="@+id/menu_logout"

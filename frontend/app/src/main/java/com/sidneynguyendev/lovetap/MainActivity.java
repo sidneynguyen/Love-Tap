@@ -265,7 +265,7 @@ public class MainActivity extends AppCompatActivity
                             }
                             getSupportFragmentManager().beginTransaction().detach(mMainFragment).attach(mMainFragment).commit();
                         } catch (IOException eIO) {
-                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/clear/crush", e);
+                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/clear/crush", eIO);
                             showErrorOnUIThread("Could not connect to the server. Please try again.");
                         }
                     }

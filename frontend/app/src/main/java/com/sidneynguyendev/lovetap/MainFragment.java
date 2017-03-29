@@ -49,11 +49,6 @@ public class MainFragment extends Fragment {
     public MainFragment() {}
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_main, container, false);
@@ -92,18 +87,21 @@ public class MainFragment extends Fragment {
                             } else {
                                 try {
                                     boolean canUpdate = false;
+                                    label:
                                     while (jsonReader.hasNext()) {
                                         String key = jsonReader.nextName();
-                                        if (key.equals("canUpdate")) {
-                                            canUpdate = jsonReader.nextBoolean();
-                                            break;
-                                        } else if (key.equals("err")) {
-                                            int error = jsonReader.nextInt();
-                                            showErrorOnUIThread("Could not connect to the server. Please try again.");
-                                            handleError(error);
-                                            return;
-                                        } else{
-                                            jsonReader.skipValue();
+                                        switch (key) {
+                                            case "canUpdate":
+                                                canUpdate = jsonReader.nextBoolean();
+                                                break label;
+                                            case "err":
+                                                int error = jsonReader.nextInt();
+                                                showErrorOnUIThread("Could not connect to the server. Please try again.");
+                                                handleError(error);
+                                                return;
+                                            default:
+                                                jsonReader.skipValue();
+                                                break;
                                         }
                                     }
                                     if (canUpdate) {
@@ -234,13 +232,13 @@ public class MainFragment extends Fragment {
                         mCrushProfilePicView.setProfileId(id);
                         mCrushTextView.setText(name);
                         if (me) {
-                            mCrushDecisionTextView.setText(name.toUpperCase() + " HAS A CRUSH ON YOU TOO!!!");
+                            mCrushDecisionTextView.setText(getResources().getString(R.string.string_main_crushtoo, name.toUpperCase()));
                         } else {
-                            mCrushDecisionTextView.setText(name + " has not chosen you yet ;)");
+                            mCrushDecisionTextView.setText(getResources().getString(R.string.string_main_crushyet, name));
                         }
                     } else {
                         mCrushProfilePicView.setProfileId(null);
-                        mCrushTextView.setText("Select a crush!!!");
+                        mCrushTextView.setText(R.string.string_crush_select);
                         mCrushDecisionTextView.setText("");
                     }
                     if (mTimer != null) {

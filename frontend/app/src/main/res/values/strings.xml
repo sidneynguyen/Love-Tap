@@ -1,14 +1,18 @@
 <resources>
     <string name="app_name">Love Tap</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_main">Love Tap</string>
     <string name="string_main_timedesc">You can select a new crush in</string>
     <string name="string_main_defaulttime">00:00:00</string>
     <string name="string_main_crushtext">Your crush is</string>
     <string name="string_main_logout">Log Out</string>
     <string name="string_main_cancel">Cancel</string>
     <string name="string_main_clearcrush">Deselect Crush</string>
-
+    <string name="love_tap">Love Tap</string>
+    <string name="string_select_desc">Who do you have a crush on?</string>
+    <string name="string_login_desc">Find out if your crush likes you back!</string>
+    <string name="menu_refresh">Refresh</string>
+    <string name="string_main_crushtoo">%s HAS A CRUSH ON YOU TOO!!!</string>
+    <string name="string_main_crushyet">%s  has not chosen you yet ;)</string>
+    <string name="string_crush_select">Select a crush!!!</string>
 </resources>

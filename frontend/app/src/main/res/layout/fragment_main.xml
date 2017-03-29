@@ -40,7 +40,6 @@
                 android:layout_margin="8dp"
                 android:id="@+id/textview_main_crushname"
                 android:layout_toEndOf="@+id/profilepicview_main_crush"
-                android:layout_toRightOf="@+id/profilepicview_main_crush"
                 android:layout_centerVertical="true" />
         </RelativeLayout>
 
@@ -91,7 +90,8 @@
         android:layout_centerHorizontal="true"
         android:layout_margin="32dp"
         android:layout_below="@+id/textview_main_time"
-        app:srcCompat="@drawable/love_tap" />
+        app:srcCompat="@drawable/love_tap"
+        android:contentDescription="@string/love_tap"/>
 
 
 </RelativeLayout>

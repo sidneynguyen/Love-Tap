@@ -7,8 +7,8 @@ package com.sidneynguyendev.lovetap;
  * Created by sidney on 3/25/17.
  */
 
-public class ErrorCodes {
-    public static final int ERR_USER_NOT_FOUND = 420;
-    public static final int ERR_DATABASE = 1337;
-    public static final int ERR_24_HOURS_NOT_PASSED = 666;
+class ErrorCodes {
+    static final int ERR_USER_NOT_FOUND = 420;
+    static final int ERR_DATABASE = 1337;
+    static final int ERR_24_HOURS_NOT_PASSED = 666;
 }

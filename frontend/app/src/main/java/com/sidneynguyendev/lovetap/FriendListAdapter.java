@@ -70,7 +70,7 @@ class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.FriendVie
         @Override
         public void onClick(View v) {
             if (mOnFriendClickListener != null) {
-                mOnFriendClickListener.onFriendClick(v, getPosition());
+                mOnFriendClickListener.onFriendClick(v, getAdapterPosition());
             }
         }
     }
