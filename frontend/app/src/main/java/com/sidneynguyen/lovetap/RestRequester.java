@@ -1,8 +1,7 @@
-package com.sidneynguyendev.lovetap;
+package com.sidneynguyen.lovetap;
 
 import android.os.AsyncTask;
 import android.util.JsonReader;
-import android.util.Log;
 
 import org.json.JSONObject;
 

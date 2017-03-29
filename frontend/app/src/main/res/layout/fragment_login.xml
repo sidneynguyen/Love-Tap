@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sidneynguyendev.lovetap.LoginFragment">
+    tools:context="com.sidneynguyen.lovetap.LoginFragment">
 
     <com.facebook.login.widget.LoginButton
         android:id="@+id/loginbutton_login_fb"

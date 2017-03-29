@@ -1,4 +1,4 @@
-package com.sidneynguyendev.lovetap;
+package com.sidneynguyen.lovetap;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.facebook.AccessToken;
 import com.facebook.login.LoginManager;
+import com.sidneynguyen.lovetap.R;
 
 import org.json.JSONException;
 import org.json.JSONObject;

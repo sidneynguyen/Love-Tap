@@ -1,4 +1,4 @@
-package com.sidneynguyendev.lovetap;
+package com.sidneynguyen.lovetap;
 
 /**
  * File Name: ErrorCodes.java

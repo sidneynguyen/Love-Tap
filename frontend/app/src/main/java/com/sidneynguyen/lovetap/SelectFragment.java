@@ -1,4 +1,4 @@
-package com.sidneynguyendev.lovetap;
+package com.sidneynguyen.lovetap;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -15,6 +15,7 @@ import android.widget.Toast;
 import com.facebook.AccessToken;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
+import com.sidneynguyen.lovetap.R;
 
 import org.json.JSONArray;
 import org.json.JSONException;

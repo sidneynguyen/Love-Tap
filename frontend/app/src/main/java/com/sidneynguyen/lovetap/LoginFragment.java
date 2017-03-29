@@ -1,4 +1,4 @@
-package com.sidneynguyendev.lovetap;
+package com.sidneynguyen.lovetap;
 
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +17,7 @@ import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
+import com.sidneynguyen.lovetap.R;
 
 /**
  * File Name: LoginFragment.java
