@@ -2,6 +2,7 @@ package com.sidneynguyendev.lovetap;
 
 import android.os.AsyncTask;
 import android.util.JsonReader;
+import android.util.Log;
 
 import org.json.JSONObject;
 
@@ -24,7 +25,8 @@ class RestRequester {
             @Override
             public void run() {
                 try {
-                    URL url = new URL(urlString);
+                    URL url = new URL(Secrets.SERVER_URL + urlString);
+                    Log.d("HERE", Secrets.SERVER_URL + urlString);
                     HttpURLConnection conn = (HttpURLConnection) url.openConnection();
                     conn.setConnectTimeout(20000);
                     conn.setReadTimeout(20000);

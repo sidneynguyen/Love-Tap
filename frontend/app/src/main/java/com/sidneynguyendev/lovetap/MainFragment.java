@@ -72,7 +72,7 @@ public class MainFragment extends Fragment {
                 RestRequester requester = new RestRequester();
                 AccessToken token = AccessToken.getCurrentAccessToken();
                 String uid = token.getUserId();
-                String url = "http://10.0.2.2:3000/api/get/time";
+                String url = "/api/get/time";
                 JSONObject body = new JSONObject();
                 try {
                     body.put("facebookId", uid);
@@ -82,7 +82,7 @@ public class MainFragment extends Fragment {
                         public void onJson(Exception e, JsonReader jsonReader) {
                             setProgressBarVisibility(View.GONE);
                             if (e != null) {
-                                Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/time", e);
+                                Log.e(TAG, "POST to /api/get/time", e);
                                 showErrorOnUIThread("Could not connect to the server. Please try again.");
                             } else {
                                 try {
@@ -117,14 +117,14 @@ public class MainFragment extends Fragment {
                                         });
                                     }
                                 } catch (IOException eIO) {
-                                    Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/time", eIO);
+                                    Log.e(TAG, "POST to /api/get/time", eIO);
                                     showErrorOnUIThread("Could not connect to the server. Please try again.");
                                 }
                             }
                         }
                     });
                 } catch (JSONException e) {
-                    Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/time", e);
+                    Log.e(TAG, "POST to /api/get/time", e);
                     showErrorOnUIThread("Could not connect to the server. Please try again.");
                     setProgressBarVisibility(View.GONE);
                 }
@@ -146,14 +146,14 @@ public class MainFragment extends Fragment {
             try {
                 body.put("facebookId", uid);
                 body.put("accessToken", token.getToken());
-                String url = "http://10.0.2.2:3000/api/get/crush";
+                String url = "/api/get/crush";
                 RestRequester requester = new RestRequester();
                 requester.post(url, body, new RestRequester.OnJsonListener() {
                     @Override
                     public void onJson(Exception e, JsonReader jsonReader) {
                         setProgressBarVisibility(View.GONE);
                         if (e != null) {
-                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/crush", e);
+                            Log.e(TAG, "POST to /api/get/crush", e);
                             showErrorOnUIThread("Could not connect to the server. Please try again.");
                         } else {
                             String crushId = null;
@@ -198,14 +198,14 @@ public class MainFragment extends Fragment {
                                 }
                                 updateUI(crushId, crushName, crushMe, timeLeft);
                             } catch (IOException eIO) {
-                                Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/crush", eIO);
+                                Log.e(TAG, "POST to /api/get/crush", eIO);
                                 showErrorOnUIThread("Could not connect to the server. Please try again.");
                             }
                         }
                     }
                 });
             } catch (JSONException e) {
-                Log.e(TAG, "POST to http://10.0.2.2:3000/api/get/crush", e);
+                Log.e(TAG, "POST to /api/get/crush", e);
                 showErrorOnUIThread("Could not connect to the server. Please try again.");
                 setProgressBarVisibility(View.GONE);
             }

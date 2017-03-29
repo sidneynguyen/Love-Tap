@@ -91,7 +91,7 @@ public class MainActivity extends AppCompatActivity
     public void onLoginFragmentSuccess(AccessToken token) {
         setProgressBarVisibility(View.VISIBLE);
         RestRequester requester = new RestRequester();
-        String url = "http://10.0.2.2:3000/auth/facebook/token";
+        String url = "/auth/facebook/token";
         JSONObject body = new JSONObject();
         try {
             body.put("access_token", token.getToken());
@@ -100,7 +100,7 @@ public class MainActivity extends AppCompatActivity
                 public void onJson(Exception e, JsonReader jsonReader) {
                     setProgressBarVisibility(View.GONE);
                     if (e != null) {
-                        Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", e);
+                        Log.e(TAG, "POST to /auth/facebook/token", e);
                         showErrorOnUIThread("An error has occurred when trying to log in. Please try again.");
                         LoginManager.getInstance().logOut();
                         setFragment(FRAG_LOGIN);
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity
                 }
             });
         } catch (JSONException e) {
-            Log.e(TAG, "POST to http://10.0.2.2:3000/auth/facebook/token", e);
+            Log.e(TAG, "POST to /auth/facebook/token", e);
             showErrorOnUIThread("An error has occurred when trying to log in. Please try again.");
             setProgressBarVisibility(View.GONE);
             LoginManager.getInstance().logOut();
@@ -142,13 +142,13 @@ public class MainActivity extends AppCompatActivity
             body.put("crushId", crushId);
             body.put("crushName", crushName);
             RestRequester requester = new RestRequester();
-            String url = "http://10.0.2.2:3000/api/select/crush";
+            String url = "/api/select/crush";
             requester.post(url, body, new RestRequester.OnJsonListener() {
                 @Override
                 public void onJson(Exception e, JsonReader jsonReader) {
                     setProgressBarVisibility(View.GONE);
                     if (e != null) {
-                        Log.e(TAG, "POST to http://10.0.2.2:3000/api/select/crush", e);
+                        Log.e(TAG, "POST to /api/select/crush", e);
                         showErrorOnUIThread("Could not connect to the server. Please try again.");
                     } else {
                         try {
@@ -164,14 +164,14 @@ public class MainActivity extends AppCompatActivity
                             }
                             setFragment(FRAG_MAIN);
                         } catch (IOException eIO) {
-                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/select/crush", eIO);
+                            Log.e(TAG, "POST to /api/select/crush", eIO);
                             showErrorOnUIThread("Could not connect to the server. Please try again.");
                         }
                     }
                 }
             });
         } catch (JSONException e) {
-            Log.e(TAG, "POST to http://10.0.2.2:3000/api/select/crush", e);
+            Log.e(TAG, "POST to /api/select/crush", e);
             showErrorOnUIThread("Could not connect to the server. Please try again.");
             setProgressBarVisibility(View.GONE);
         }
@@ -243,13 +243,13 @@ public class MainActivity extends AppCompatActivity
             body.put("facebookId", uid);
             body.put("accessToken", token.getToken());
             RestRequester requester = new RestRequester();
-            String url = "http://10.0.2.2:3000/api/clear/crush";
+            String url = "/api/clear/crush";
             requester.post(url, body, new RestRequester.OnJsonListener() {
                 @Override
                 public void onJson(Exception e, JsonReader jsonReader) {
                     setProgressBarVisibility(View.GONE);
                     if (e != null) {
-                        Log.e(TAG, "POST to http://10.0.2.2:3000/api/clear/crush", e);
+                        Log.e(TAG, "POST to /api/clear/crush", e);
                         showErrorOnUIThread("Could not connect to the server. Please try again.");
                     } else {
                         try {
@@ -265,14 +265,14 @@ public class MainActivity extends AppCompatActivity
                             }
                             getSupportFragmentManager().beginTransaction().detach(mMainFragment).attach(mMainFragment).commit();
                         } catch (IOException eIO) {
-                            Log.e(TAG, "POST to http://10.0.2.2:3000/api/clear/crush", eIO);
+                            Log.e(TAG, "POST to /api/clear/crush", eIO);
                             showErrorOnUIThread("Could not connect to the server. Please try again.");
                         }
                     }
                 }
             });
         } catch (JSONException e) {
-            Log.e(TAG, "POST to http://10.0.2.2:3000/api/clear/crush", e);
+            Log.e(TAG, "POST to /api/clear/crush", e);
             showErrorOnUIThread("Could not connect to the server. Please try again.");
             setProgressBarVisibility(View.GONE);
         }
